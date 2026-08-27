@@ -204,7 +204,7 @@
 </dialog>
 
 <script>
-    // --- DATABASE CLOUD ---
+   // --- DATABASE CLOUD ---
     const API_KEY = '$2a$10$rUwGPEN6MCGQIhbrf/In0OJkvcu3.owlrFizQtK2iEzdk/0Qmh.Le'; 
     const BIN_ID = '6a905e6bda38895dfe18ae9e';
 
@@ -220,7 +220,7 @@
         grip: `<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M9 5a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm10-14a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`
     };
 
-    // Struttura Dati
+    // Struttura Dati Iniziale
     const defaultData = {
         "medioLungo": {
             name: "Viaggi medio lunghi (2 sett - 2 mesi)",
@@ -287,12 +287,18 @@
         statusEl.innerHTML = isLoading ? `<span class="loader"></span> ${text}` : text;
     }
 
+    // Assicura che i dati (anche finti) non facciano crashare il codice
     function normalizeData(data) {
+        if (!data || !data.medioLungo || !data.medioLungo.sections) {
+            return JSON.parse(JSON.stringify(defaultData));
+        }
         Object.keys(data).forEach(listKey => {
             data[listKey].sections.forEach(sec => {
                 if (sec.hidden === undefined) sec.hidden = false;
+                if (!sec.subsections) sec.subsections = [];
                 sec.subsections.forEach(sub => {
                     if (sub.collapsed === undefined) sub.collapsed = false;
+                    if (!sub.items) sub.items = [];
                     sub.items.forEach(item => {
                         if (item.mise === undefined) item.mise = false;
                         if (item.valigia === undefined) item.valigia = false;
@@ -306,26 +312,37 @@
     }
 
     async function loadData() {
-        let localData = JSON.parse(localStorage.getItem('valigiaAppFinalV2')) || normalizeData(defaultData);
+        let localData = normalizeData(JSON.parse(localStorage.getItem('valigiaAppFinalV2')));
         if(API_KEY.includes('INSERISCI_QUI')) {
             setStatus('⚠️ Modalità Offline', false);
-            return normalizeData(localData);
+            return localData;
         }
 
         setStatus('Sincronizzazione in corso...', true);
         try {
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { headers: { 'X-Master-Key': API_KEY } });
+            // Aggiungo /latest per forzare la lettura corretta dell'ultima versione
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { 
+                headers: { 'X-Master-Key': API_KEY } 
+            });
+            if(!res.ok) throw new Error('Fetch failed');
+            
             const data = await res.json();
-            if (!data.record || Object.keys(data.record).length === 0) {
+            
+            // Se JSONBin ha restituito il finto file di inizializzazione, rigenera
+            if (!data.record || !data.record.medioLungo) {
+                console.log("Inizializzazione del Cloud forzata...");
                 const initData = normalizeData(defaultData);
                 await saveData(initData); 
                 return initData;
             }
-            setStatus('✅ Sincronizzato con il cloud', false);
+            
+            setStatus('✅ Sincronizzato col Cloud', false);
             return normalizeData(data.record);
+            
         } catch(e) {
-            setStatus('❌ Errore rete. Uso dati locali.', false);
-            return normalizeData(localData);
+            console.error(e);
+            setStatus('❌ Errore Rete. Uso dati locali.', false);
+            return localData;
         }
     }
 
@@ -334,14 +351,20 @@
         if(!API_KEY.includes('INSERISCI_QUI')) {
             setStatus('Salvataggio...', true);
             try {
-                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'X-Master-Key': API_KEY,
+                        'X-Bin-Versioning': 'false' // BLOCCA la creazione di mille copie in memoria!
+                    },
                     body: JSON.stringify(dataToSave)
                 });
+                if(!res.ok) throw new Error('Upload failed');
                 setStatus('✅ Salvato nel Cloud', false);
             } catch(e) {
-                setStatus('❌ Errore salvataggio', false);
+                console.error(e);
+                setStatus('❌ Errore salvataggio. Dati sul PC sicuri.', false);
             }
         }
     }
@@ -405,7 +428,7 @@
     function handleDragStart(e, sec, sub, item) {
         dragSrc = {sec, sub, item};
         e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', 'drag'); // Required per Firefox
+        e.dataTransfer.setData('text/plain', 'drag'); // Richiesto da Firefox
         setTimeout(() => e.target.classList.add('dragging'), 0);
     }
     function handleDragEnd(e) {
@@ -455,7 +478,7 @@
         e.currentTarget.classList.remove('drag-over');
         if (!dragSrc) return;
         
-        if (dragSrc.sec === targetSec && dragSrc.sub === targetSub) return; // Drop nello stesso posto già gestito
+        if (dragSrc.sec === targetSec && dragSrc.sub === targetSub) return; // Drop nello stesso posto già gestito da dropItem
 
         const itemObj = appData[currentList].sections[dragSrc.sec].subsections[dragSrc.sub].items.splice(dragSrc.item, 1)[0];
         appData[currentList].sections[targetSec].subsections[targetSub].items.push(itemObj);
@@ -541,7 +564,7 @@
             return;
         }
 
-        let toBuyItems = []; // Array per accumulare tutto ciò che è da comprare
+        let toBuyItems = []; // Raccoglitore lista della spesa
 
         sectionsData.forEach((section, sIndex) => {
             const secDiv = document.createElement('div');
@@ -601,7 +624,7 @@
 
                     if (!item.skip && !item.valigia) missingItems.push(item.name);
                     
-                    // Seleziona oggetti da comprare
+                    // Aggiungi alla lista "da comprare" se flaggato
                     if (item.toBuy) {
                         toBuyItems.push({ name: item.name, location: `${section.title.split(' (')[0]} - ${sub.name}` });
                     }
@@ -680,7 +703,7 @@
             buyContainer.className = 'to-buy-summary';
             buyContainer.innerHTML = `
                 <div class="section-header">
-                    <span>${ICONS.cart} Lista della Spesa (Da Comprare)</span>
+                    <span>${ICONS.cart} Lista della Spesa</span>
                 </div>
                 <ul class="to-buy-list">
                     ${toBuyItems.map(i => `<li><strong>${i.name}</strong> <span style="color:var(--text-muted); font-size: 0.85em;">(Destinazione: ${i.location})</span></li>`).join('')}
