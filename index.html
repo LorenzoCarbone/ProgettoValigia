@@ -26,7 +26,7 @@
         
         .header-app { text-align: center; margin-bottom: 20px; }
         h1 { color: var(--primary); margin: 0 0 5px 0; font-size: 1.8em; letter-spacing: -0.5px; font-weight: 800;}
-        .sync-status { font-size: 0.85em; color: var(--text-muted); font-weight: 500;}
+        .sync-status { font-size: 0.85em; color: var(--text-muted); font-weight: 500; min-height: 18px;}
 
         /* Icone SVG */
         .svg-icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -204,7 +204,7 @@
 </dialog>
 
 <script>
-   // --- DATABASE CLOUD ---
+    // --- CHIAVI FORZATE CLOUD ---
     const API_KEY = '$2a$10$rUwGPEN6MCGQIhbrf/In0OJkvcu3.owlrFizQtK2iEzdk/0Qmh.Le'; 
     const BIN_ID = '6a905e6bda38895dfe18ae9e';
 
@@ -220,7 +220,7 @@
         grip: `<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M9 5a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm10-14a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`
     };
 
-    // Struttura Dati Iniziale
+    // Struttura Dati Iniziale Intatta
     const defaultData = {
         "medioLungo": {
             name: "Viaggi medio lunghi (2 sett - 2 mesi)",
@@ -287,7 +287,6 @@
         statusEl.innerHTML = isLoading ? `<span class="loader"></span> ${text}` : text;
     }
 
-    // Assicura che i dati (anche finti) non facciano crashare il codice
     function normalizeData(data) {
         if (!data || !data.medioLungo || !data.medioLungo.sections) {
             return JSON.parse(JSON.stringify(defaultData));
@@ -311,26 +310,21 @@
         return data;
     }
 
+    // SCARICAMENTO CLOUD FORZATO
     async function loadData() {
-        let localData = normalizeData(JSON.parse(localStorage.getItem('valigiaAppFinalV2')));
-        if(API_KEY.includes('INSERISCI_QUI')) {
-            setStatus('⚠️ Modalità Offline', false);
-            return localData;
-        }
-
-        setStatus('Sincronizzazione in corso...', true);
+        setStatus('Scaricamento dal cloud...', true);
         try {
-            // Aggiungo /latest per forzare la lettura corretta dell'ultima versione
             const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { 
                 headers: { 'X-Master-Key': API_KEY } 
             });
-            if(!res.ok) throw new Error('Fetch failed');
+            
+            if(!res.ok) throw new Error('Errore lettura da JSONBin');
             
             const data = await res.json();
             
-            // Se JSONBin ha restituito il finto file di inizializzazione, rigenera
+            // Se JSONBin è vuoto o corrotto, carica il default e salvalo in cloud
             if (!data.record || !data.record.medioLungo) {
-                console.log("Inizializzazione del Cloud forzata...");
+                console.log("Inizializzazione forzata del Cloud...");
                 const initData = normalizeData(defaultData);
                 await saveData(initData); 
                 return initData;
@@ -341,31 +335,37 @@
             
         } catch(e) {
             console.error(e);
-            setStatus('❌ Errore Rete. Uso dati locali.', false);
-            return localData;
+            setStatus('❌ Errore Cloud! Lettura fallita.', false);
+            alert("Non riesco a scaricare dal cloud. Assicurati di avere internet funzionante!");
+            // Fallback d'emergenza locale
+            return normalizeData(JSON.parse(localStorage.getItem('valigiaAppFinalV2')));
         }
     }
 
+    // CARICAMENTO CLOUD FORZATO
     async function saveData(dataToSave = appData) {
+        // Salvataggio d'emergenza locale (non fa mai male)
         localStorage.setItem('valigiaAppFinalV2', JSON.stringify(dataToSave));
-        if(!API_KEY.includes('INSERISCI_QUI')) {
-            setStatus('Salvataggio...', true);
-            try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                    method: 'PUT',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'X-Master-Key': API_KEY,
-                        'X-Bin-Versioning': 'false' // BLOCCA la creazione di mille copie in memoria!
-                    },
-                    body: JSON.stringify(dataToSave)
-                });
-                if(!res.ok) throw new Error('Upload failed');
-                setStatus('✅ Salvato nel Cloud', false);
-            } catch(e) {
-                console.error(e);
-                setStatus('❌ Errore salvataggio. Dati sul PC sicuri.', false);
-            }
+        
+        setStatus('Salvataggio in cloud...', true);
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'X-Master-Key': API_KEY,
+                    'X-Bin-Versioning': 'false' // Evita la saturazione dello spazio di JSONBin
+                },
+                body: JSON.stringify(dataToSave)
+            });
+            
+            if(!res.ok) throw new Error('Upload fallito');
+            
+            setStatus('✅ Salvato nel Cloud', false);
+        } catch(e) {
+            console.error(e);
+            setStatus('❌ Errore Cloud! Dati salvati solo sul PC.', false);
+            alert("Attenzione: Impossibile salvare la modifica sul cloud. Controlla la connessione!");
         }
     }
 
@@ -428,7 +428,7 @@
     function handleDragStart(e, sec, sub, item) {
         dragSrc = {sec, sub, item};
         e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', 'drag'); // Richiesto da Firefox
+        e.dataTransfer.setData('text/plain', 'drag'); 
         setTimeout(() => e.target.classList.add('dragging'), 0);
     }
     function handleDragEnd(e) {
@@ -478,7 +478,7 @@
         e.currentTarget.classList.remove('drag-over');
         if (!dragSrc) return;
         
-        if (dragSrc.sec === targetSec && dragSrc.sub === targetSub) return; // Drop nello stesso posto già gestito da dropItem
+        if (dragSrc.sec === targetSec && dragSrc.sub === targetSub) return;
 
         const itemObj = appData[currentList].sections[dragSrc.sec].subsections[dragSrc.sub].items.splice(dragSrc.item, 1)[0];
         appData[currentList].sections[targetSec].subsections[targetSub].items.push(itemObj);
@@ -609,7 +609,6 @@
                     const itemDiv = document.createElement('div');
                     itemDiv.className = 'item';
                     
-                    // Impostazioni Drag & Drop Native sull'oggetto
                     itemDiv.setAttribute('draggable', 'true');
                     itemDiv.ondragstart = (e) => handleDragStart(e, sIndex, subIndex, iIndex);
                     itemDiv.ondragend = handleDragEnd;
@@ -624,7 +623,6 @@
 
                     if (!item.skip && !item.valigia) missingItems.push(item.name);
                     
-                    // Aggiungi alla lista "da comprare" se flaggato
                     if (item.toBuy) {
                         toBuyItems.push({ name: item.name, location: `${section.title.split(' (')[0]} - ${sub.name}` });
                     }
