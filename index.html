@@ -26,7 +26,7 @@
         
         .header-app { text-align: center; margin-bottom: 20px; }
         h1 { color: var(--primary); margin: 0 0 5px 0; font-size: 1.8em; letter-spacing: -0.5px; font-weight: 800;}
-        .sync-status { font-size: 0.85em; color: var(--text-muted); font-weight: 500; min-height: 18px;}
+        .sync-status { font-size: 0.85em; color: var(--text-muted); font-weight: 500;}
 
         /* Icone SVG */
         .svg-icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -90,7 +90,7 @@
         .item.status-skip .item-name { text-decoration: line-through; color: #94a3b8; }
         .item.status-buy { border-color: #fca5a5; border-left: 4px solid var(--danger); }
         
-        /* Controlli Checkbox (Senza Testo, Solo Emoji) */
+        /* Controlli Checkbox (Solo Emoji) */
         .controls { display: flex; gap: 8px; flex-shrink: 0;}
         .control-label { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.15em; cursor: pointer; user-select: none; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background-color: #f8fafc; transition: 0.1s;}
         .control-label:hover { background-color: #e2e8f0; }
@@ -117,7 +117,7 @@
         .btn-danger-main { background-color: white; color: var(--danger); border: 2px solid #fecaca; }
         .btn-danger-main:hover { background-color: #fef2f2; border-color: var(--danger);}
 
-        /* Mobile Layout Ottimizzato */
+        /* Mobile Layout */
         @media (max-width: 650px) {
             .item { flex-direction: column; align-items: stretch; gap: 12px; padding: 12px; }
             .item-actions { opacity: 1; justify-content: flex-end; }
@@ -125,7 +125,7 @@
             .control-label { flex: 1; padding: 10px 0; }
         }
         
-        /* Modals (Popups) */
+        /* Modals */
         dialog { border: none; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 25px; max-width: 340px; width: 90%; }
         dialog::backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
         dialog h3 { margin-top: 0; color: var(--text-main); margin-bottom: 20px; font-size: 1.4em;}
@@ -154,7 +154,6 @@
         <div id="sync-status" class="sync-status">Caricamento in corso...</div>
     </div>
 
-    <!-- Selettore Liste -->
     <div class="list-selector-container">
         <svg class="svg-icon" style="color:var(--primary)" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         <select id="list-selector" onchange="switchList(this.value)"></select>
@@ -192,10 +191,8 @@
     <h3>Modifica Oggetto</h3>
     <label>Nome oggetto:</label>
     <input type="text" id="edit-item-name">
-    
     <label>Sposta in:</label>
     <select id="edit-item-dest"></select>
-    
     <div class="dialog-btns">
         <button class="btn-delete" onclick="deleteCurrentItem()">Elimina</button>
         <button class="btn-cancel" onclick="closeModal('modal-edit-item')">Annulla</button>
@@ -204,11 +201,10 @@
 </dialog>
 
 <script>
-    // --- CHIAVI FORZATE CLOUD ---
-    const API_KEY = '$2a$10$hoS8MoO7YWcZD9I/tiqElehDl6HdH/aFXQ94L7Nsljauh3lUVlZEW'; 
-    const BIN_ID = '6a9064c8f5f4af5e294a5c76';
+    // --- DATABASE SUPABASE CLOUD ---
+    const SUPABASE_URL = 'https://qikswdfoegiyktfxfnsz.supabase.co'; 
+    const SUPABASE_KEY = 'sb_publishable_TNINUDnCq-B2rRL-lgMtiw_Xj9H2ia1';
 
-    // SVG Icons
     const ICONS = {
         eye: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
         eyeOff: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`,
@@ -220,7 +216,6 @@
         grip: `<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M9 5a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm10-14a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`
     };
 
-    // Struttura Dati Iniziale Intatta
     const defaultData = {
         "medioLungo": {
             name: "Viaggi medio lunghi (2 sett - 2 mesi)",
@@ -282,15 +277,10 @@
     let dragSrc = null;
 
     const statusEl = document.getElementById('sync-status');
-
-    function setStatus(text, isLoading) {
-        statusEl.innerHTML = isLoading ? `<span class="loader"></span> ${text}` : text;
-    }
+    function setStatus(text, isLoading) { statusEl.innerHTML = isLoading ? `<span class="loader"></span> ${text}` : text; }
 
     function normalizeData(data) {
-        if (!data || !data.medioLungo || !data.medioLungo.sections) {
-            return JSON.parse(JSON.stringify(defaultData));
-        }
+        if (!data || !data.medioLungo || !data.medioLungo.sections) return JSON.parse(JSON.stringify(defaultData));
         Object.keys(data).forEach(listKey => {
             data[listKey].sections.forEach(sec => {
                 if (sec.hidden === undefined) sec.hidden = false;
@@ -310,62 +300,50 @@
         return data;
     }
 
-    // SCARICAMENTO CLOUD FORZATO
     async function loadData() {
-        setStatus('Scaricamento dal cloud...', true);
+        let localData = normalizeData(JSON.parse(localStorage.getItem('valigiaSupabase')));
+        setStatus('Scaricamento dal database...', true);
         try {
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { 
-                headers: { 'X-Master-Key': API_KEY } 
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/valigie?id=eq.1`, { 
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
             });
-            
-            if(!res.ok) throw new Error('Errore lettura da JSONBin');
-            
+            if(!res.ok) throw new Error('Errore lettura');
             const data = await res.json();
             
-            // Se JSONBin è vuoto o corrotto, carica il default e salvalo in cloud
-            if (!data.record || !data.record.medioLungo) {
-                console.log("Inizializzazione forzata del Cloud...");
+            if (!data || data.length === 0 || !data[0].dati || !data[0].dati.medioLungo) {
                 const initData = normalizeData(defaultData);
                 await saveData(initData); 
                 return initData;
             }
             
-            setStatus('✅ Sincronizzato col Cloud', false);
-            return normalizeData(data.record);
-            
+            setStatus('✅ Sincronizzato con Supabase', false);
+            return normalizeData(data[0].dati);
         } catch(e) {
             console.error(e);
-            setStatus('❌ Errore Cloud! Lettura fallita.', false);
-            alert("Non riesco a scaricare dal cloud. Assicurati di avere internet funzionante!");
-            // Fallback d'emergenza locale
-            return normalizeData(JSON.parse(localStorage.getItem('valigiaAppFinalV2')));
+            setStatus('❌ Errore Rete. Uso dati locali.', false);
+            return localData;
         }
     }
 
-    // CARICAMENTO CLOUD FORZATO
     async function saveData(dataToSave = appData) {
-        // Salvataggio d'emergenza locale (non fa mai male)
-        localStorage.setItem('valigiaAppFinalV2', JSON.stringify(dataToSave));
-        
-        setStatus('Salvataggio in cloud...', true);
+        localStorage.setItem('valigiaSupabase', JSON.stringify(dataToSave));
+        setStatus('Salvataggio...', true);
         try {
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/valigie?id=eq.1`, {
+                method: 'PATCH',
                 headers: { 
                     'Content-Type': 'application/json', 
-                    'X-Master-Key': API_KEY,
-                    'X-Bin-Versioning': 'false' // Evita la saturazione dello spazio di JSONBin
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Prefer': 'return=minimal'
                 },
-                body: JSON.stringify(dataToSave)
+                body: JSON.stringify({ dati: dataToSave })
             });
-            
             if(!res.ok) throw new Error('Upload fallito');
-            
             setStatus('✅ Salvato nel Cloud', false);
         } catch(e) {
             console.error(e);
-            setStatus('❌ Errore Cloud! Dati salvati solo sul PC.', false);
-            alert("Attenzione: Impossibile salvare la modifica sul cloud. Controlla la connessione!");
+            setStatus('❌ Errore Cloud! Dati salvati sul PC.', false);
         }
     }
 
@@ -424,7 +402,6 @@
         }
     }
 
-    // --- DRAG & DROP NATIVO HTML5 ---
     function handleDragStart(e, sec, sub, item) {
         dragSrc = {sec, sub, item};
         e.dataTransfer.effectAllowed = 'move';
@@ -442,24 +419,18 @@
         e.dataTransfer.dropEffect = 'move';
         e.currentTarget.classList.add('drag-over-item');
     }
-    function handleDragLeaveItem(e) {
-        e.currentTarget.classList.remove('drag-over-item');
-    }
+    function handleDragLeaveItem(e) { e.currentTarget.classList.remove('drag-over-item'); }
     async function handleDropItem(e, targetSec, targetSub, targetItem) {
         e.preventDefault();
         e.stopPropagation();
         e.currentTarget.classList.remove('drag-over-item');
-        if (!dragSrc) return;
-        
-        if (dragSrc.sec === targetSec && dragSrc.sub === targetSub && dragSrc.item === targetItem) return;
+        if (!dragSrc || (dragSrc.sec === targetSec && dragSrc.sub === targetSub && dragSrc.item === targetItem)) return;
 
         const itemObj = appData[currentList].sections[dragSrc.sec].subsections[dragSrc.sub].items.splice(dragSrc.item, 1)[0];
-        
         let insertIdx = targetItem;
         if (dragSrc.sec === targetSec && dragSrc.sub === targetSub && dragSrc.item < targetItem) { insertIdx -= 1; }
         
         appData[currentList].sections[targetSec].subsections[targetSub].items.splice(insertIdx, 0, itemObj);
-        
         dragSrc = null;
         renderApp(); await saveData();
     }
@@ -469,25 +440,19 @@
         e.currentTarget.classList.add('drag-over');
     }
     function handleDragLeaveArea(e) {
-        if(e.currentTarget && e.relatedTarget && !e.currentTarget.contains(e.relatedTarget)) {
-            e.currentTarget.classList.remove('drag-over');
-        }
+        if(e.currentTarget && e.relatedTarget && !e.currentTarget.contains(e.relatedTarget)) e.currentTarget.classList.remove('drag-over');
     }
     async function handleDropArea(e, targetSec, targetSub) {
         e.preventDefault();
         e.currentTarget.classList.remove('drag-over');
-        if (!dragSrc) return;
-        
-        if (dragSrc.sec === targetSec && dragSrc.sub === targetSub) return;
+        if (!dragSrc || (dragSrc.sec === targetSec && dragSrc.sub === targetSub)) return; 
 
         const itemObj = appData[currentList].sections[dragSrc.sec].subsections[dragSrc.sub].items.splice(dragSrc.item, 1)[0];
         appData[currentList].sections[targetSec].subsections[targetSub].items.push(itemObj);
-        
         dragSrc = null;
         renderApp(); await saveData();
     }
 
-    // --- MODALS ---
     function openSectionModal() {
         document.getElementById('new-sec-type').value = "🎒 Zaino";
         document.getElementById('new-sec-custom').style.display = 'none';
@@ -553,7 +518,6 @@
         }
     }
 
-    // --- RENDER APP ---
     function renderApp() {
         const root = document.getElementById('app-root');
         root.innerHTML = '';
@@ -564,7 +528,7 @@
             return;
         }
 
-        let toBuyItems = []; // Raccoglitore lista della spesa
+        let toBuyItems = []; 
 
         sectionsData.forEach((section, sIndex) => {
             const secDiv = document.createElement('div');
@@ -651,7 +615,6 @@
                     headerDiv.appendChild(nameArea);
                     headerDiv.appendChild(actionsDiv);
 
-                    // Controlli Checkbox (Senza Testo)
                     const controlsDiv = document.createElement('div');
                     controlsDiv.className = 'controls';
                     controlsDiv.innerHTML = `
@@ -695,7 +658,6 @@
             root.appendChild(secDiv);
         });
 
-        // Appendi Sezione "Da Comprare" alla fine (se ci sono oggetti)
         if (toBuyItems.length > 0) {
             const buyContainer = document.createElement('div');
             buyContainer.className = 'to-buy-summary';
