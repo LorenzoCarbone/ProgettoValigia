@@ -853,8 +853,19 @@
 
     function init() {
         appData = loadData();
+        
+        // CONTROLLO DI SICUREZZA: se la lista attuale non esiste più nel salvataggio,
+        // carica automaticamente la prima lista disponibile per non far crashare l'app
+        if (!appData[currentList]) {
+            let chiavi = Object.keys(appData);
+            if (chiavi.length > 0) {
+                currentList = chiavi[0];
+            }
+        }
+
         renderSelector();
         renderApp();
+        // Ora che non ci sono crash, il footer apparirà sempre
         document.getElementById('footer').style.display = 'block';
     }
 
