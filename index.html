@@ -181,13 +181,20 @@
         <div id="sync-status" class="sync-status">💾 Salvataggio Locale Attivo</div>
     </div>
 
+    <!-- Qui le icone sono state ripristinate con il codice SVG diretto per evitare il bug -->
     <div class="list-selector-container">
         <svg class="svg-icon" style="color:var(--primary); display:block;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         <select id="list-selector" onchange="switchList(this.value)"></select>
         <div class="list-actions">
-            <button class="action-btn" title="Nuovo Scenario (Nuova Lista)" onclick="createNewList()">${ICONS.plus}</button>
-            <button class="action-btn" title="Rinomina Scenario" onclick="renameCurrentList()">${ICONS.edit}</button>
-            <button class="action-btn danger" title="Elimina Scenario" onclick="deleteCurrentList()">${ICONS.trash}</button>
+            <button class="action-btn" title="Nuovo Scenario (Nuova Lista)" onclick="createNewList()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <button class="action-btn" title="Rinomina Scenario" onclick="renameCurrentList()">
+                <svg class="svg-icon svg-mini" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button class="action-btn danger" title="Elimina Scenario" onclick="deleteCurrentList()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
         </div>
     </div>
 
@@ -252,23 +259,34 @@
         grip: `<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M9 5a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm10-14a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`
     };
 
+    // Struttura originaria ESATTA del tuo JSON, con l'aggiunta chirurgica della roba Decathlon
     const defaultData = {
         "georgia": {
             name: "🇬🇪 Georgia (Volontariato ESC)",
             sections: [
                 {
-                    title: "🎒 Zaino (Nuovo Decathlon - Sotto il sedile)", hidden: false,
+                    title: "🎒 Zaino (Sotto il sedile)", hidden: false,
                     subsections: [
-                        { name: "Lavoro e Documenti", collapsed: false, items: [{ name: "PC portatile (per tesi ONU / Beacon Project)"},{ name: "Caricatore PC e mouse"},{ name: "Passaporto e Documenti ESC"},{ name: "Portafogli"}] },
-                        { name: "Accesso Rapido in Volo", collapsed: false, items: [{ name: "Powerbank e cavi"},{ name: "Cuffiette"},{ name: "Occhiali da vista e custodia"},{ name: "Occhiali da sole"},{ name: "Borraccia vuota"}] }
+                        { name: "Elettronica e Documenti", collapsed: false, items: [{ name: "Computer con caricatore e mouse"},{ name: "Powerbank"},{ name: "Caricabatterie"},{ name: "Cuffiette"},{ name: "Documenti"},{ name: "Assicurazione sanitaria"},{ name: "Portafogli"},{ name: "Soldi valuta locale"}] },
+                        { name: "Tasca ad Accesso Rapido", collapsed: false, items: [{ name: "Chiavi"},{ name: "Medicine"},{ name: "Borraccia"},{ name: "Occhiali"},{ name: "Occhiali da sole"},{ name: "Ombrello"},{ name: "Fazzoletti"}] },
+                        { name: "Varie e Beauty Rapido", collapsed: false, items: [{ name: "Libro"},{ name: "Lucchetto"},{ name: "Spazzolino"},{ name: "Dentifricio"},{ name: "Burro cacao"},{ name: "Silviette umidificate e disinfettanti"}] }
                     ]
                 },
                 {
-                    title: "🧳 Valigia / Stiva", hidden: false,
+                    title: "🧳 Cabina (Vestiario Base)", hidden: false,
                     subsections: [
-                        { name: "Vestiario Classico e Progetto", collapsed: false, items: [{ name: "Camicie (bianche / blu)"},{ name: "Pantaloni (grigio scuro / khaki)"},{ name: "Scarpe in pelle"},{ name: "Scarpe comode / da ginnastica per il progetto"},{ name: "Cintura in pelle"},{ name: "Mutande e Calze"}] },
-                        { name: "Nuovi Acquisti Decathlon", collapsed: false, items: [{ name: "Pantaloni da trekking"},{ name: "Pile (ottimo rapporto Q/P)"},{ name: "Intimo in lana Merino"}] },
-                        { name: "Attrezzatura e Igiene", collapsed: false, items: [{ name: "Beauty case (Decathlon)"},{ name: "Asciugamano in microfibra (Decathlon)"},{ name: "Gavetta (Decathlon)"},{ name: "Shampoo e Bagnoschiuma"},{ name: "Deodorante"},{ name: "Spazzolino e Dentifricio"}] }
+                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe da passeggio"},{ name: "Pantaloni"},{ name: "Bermuda"},{ name: "Felpa"},{ name: "Giacca a vento / giacca"}, { name: "Pantaloni da trekking (Decathlon)"}] },
+                        { name: "Sopra", collapsed: false, items: [{ name: "Pigiama"},{ name: "Maglie"},{ name: "Polo/camice"},{ name: "Costume"}, { name: "Pile (Decathlon)"}] },
+                        { name: "Tasca e Incastri", collapsed: false, items: [{ name: "Panno in microfibra piccolo"},{ name: "Mutande"},{ name: "Calze"},{ name: "Cintura"}, { name: "Intimo in lana Merino (Decathlon)"}, { name: "Asciugamano in microfibra (Decathlon)"}] }
+                    ]
+                },
+                {
+                    title: "🏔️ Stiva (Zaino Grande/Attrezzatura)", hidden: false,
+                    subsections: [
+                        { name: "Fondo", collapsed: false, items: [{ name: "Nuovo Zaino 40L (Decathlon)"},{ name: "Scarpe da lavoro"},{ name: "Ciabatte"},{ name: "Sacco a pelo"},{ name: "Materassino"},{ name: "Accappatoio"},{ name: "Asciugamani"},{ name: "Lenzuola"}] },
+                        { name: "Sopra (Ingombranti)", collapsed: false, items: [{ name: "Federa"},{ name: "Pile/maglione pesante"}] },
+                        { name: "Tasca / Beauty Case (Liquidi)", collapsed: false, items: [{ name: "Beauty Case (Decathlon)"}, { name: "Crema solare"},{ name: "Deodorante"},{ name: "Shampoo"},{ name: "Bagno schiuma"},{ name: "Prodotto per capelli"},{ name: "Taglia unghie"},{ name: "Rasoio"},{ name: "Phon"},{ name: "Sapone lavaggio a mano"}] },
+                        { name: "Incastri / Lati", collapsed: false, items: [{ name: "Gavetta (Decathlon)"},{ name: "Sacchetti per panni sporchi"},{ name: "Piccola ciabatta multipresa"}] }
                     ]
                 }
             ]
@@ -279,15 +297,26 @@
                 {
                     title: "🎒 Zaino (Sotto il sedile)", hidden: false,
                     subsections: [
-                        { name: "Elettronica e Documenti", collapsed: false, items: [{ name: "Computer con caricatore e mouse"},{ name: "Powerbank"},{ name: "Documenti"},{ name: "Portafogli"}] },
-                        { name: "Tasca ad Accesso Rapido", collapsed: false, items: [{ name: "Chiavi"},{ name: "Medicine"},{ name: "Borraccia"},{ name: "Occhiali"}] }
+                        { name: "Elettronica e Documenti", collapsed: false, items: [{ name: "Computer con caricatore e mouse"},{ name: "Powerbank"},{ name: "Caricabatterie"},{ name: "Cuffiette"},{ name: "Documenti"},{ name: "Assicurazione sanitaria"},{ name: "Portafogli"},{ name: "Soldi valuta locale"}] },
+                        { name: "Tasca ad Accesso Rapido", collapsed: false, items: [{ name: "Chiavi"},{ name: "Medicine"},{ name: "Borraccia"},{ name: "Occhiali"},{ name: "Occhiali da sole"},{ name: "Ombrello"},{ name: "Fazzoletti"}] },
+                        { name: "Varie e Beauty Rapido", collapsed: false, items: [{ name: "Libro"},{ name: "Lucchetto"},{ name: "Spazzolino"},{ name: "Dentifricio"},{ name: "Burro cacao"},{ name: "Silviette umidificate e disinfettanti"}] }
                     ]
                 },
                 {
                     title: "🧳 Cabina (Vestiario Base)", hidden: false,
                     subsections: [
-                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe da passeggio"},{ name: "Pantaloni"},{ name: "Bermuda"},{ name: "Felpa"}] },
-                        { name: "Sopra", collapsed: false, items: [{ name: "Pigiama"},{ name: "Maglie"},{ name: "Polo/camicie"}] }
+                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe da passeggio"},{ name: "Pantaloni"},{ name: "Bermuda"},{ name: "Felpa"},{ name: "Giacca a vento / giacca"}] },
+                        { name: "Sopra", collapsed: false, items: [{ name: "Pigiama"},{ name: "Maglie"},{ name: "Polo/camice"},{ name: "Costume"}] },
+                        { name: "Tasca e Incastri", collapsed: false, items: [{ name: "Panno in microfibra piccolo"},{ name: "Mutande"},{ name: "Calze"},{ name: "Cintura"}] }
+                    ]
+                },
+                {
+                    title: "🏔️ Stiva (Zaino Grande/Attrezzatura)", hidden: false,
+                    subsections: [
+                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe da lavoro"},{ name: "Ciabatte"},{ name: "Sacco a pelo"},{ name: "Materassino"},{ name: "Accappatoio"},{ name: "Asciugamani"},{ name: "Lenzuola"}] },
+                        { name: "Sopra (Ingombranti)", collapsed: false, items: [{ name: "Federa"},{ name: "Pile/maglione pesante"}] },
+                        { name: "Tasca / Beauty Case (Liquidi)", collapsed: false, items: [{ name: "Crema solare"},{ name: "Deodorante"},{ name: "Shampoo"},{ name: "Bagno schiuma"},{ name: "Prodotto per capelli"},{ name: "Taglia unghie"},{ name: "Rasoio"},{ name: "Phon"},{ name: "Sapone lavaggio a mano"}] },
+                        { name: "Incastri / Lati", collapsed: false, items: [{ name: "Sacchetti per panni sporchi"},{ name: "Gavetta"},{ name: "Piccola ciabatta multipresa"}] }
                     ]
                 }
             ]
@@ -296,10 +325,20 @@
             name: "Lista valigia mare",
             sections: [
                 {
+                    title: "🎒 Zaino", hidden: false,
+                    subsections: [
+                        { name: "Documenti e Tech", collapsed: false, items: [{ name: "Telefono"},{ name: "Caricabatterie"},{ name: "Powerbank"},{ name: "Cuffiette"},{ name: "Documenti"},{ name: "Portafogli"}] },
+                        { name: "Accesso Rapido / Tasche", collapsed: false, items: [{ name: "Borraccia"},{ name: "Occhiali da sole"},{ name: "Occhiali"},{ name: "Chiavi"},{ name: "Medicine"}] },
+                        { name: "Altro", collapsed: false, items: [{ name: "Libro"},{ name: "Taccuino"},{ name: "Pigiama"},{ name: "Rasoio"}] }
+                    ]
+                },
+                {
                     title: "🧳 Valigia", hidden: false,
                     subsections: [
-                        { name: "Fondo", collapsed: false, items: [{ name: "Infradito"},{ name: "Telo mare"},{ name: "Costumi"},{ name: "Accappatoio"}] },
-                        { name: "Beauty e Intimo", collapsed: false, items: [{ name: "Crema solare"},{ name: "Doposole"},{ name: "Mutande"},{ name: "Calze"}] }
+                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe"},{ name: "Infradito"},{ name: "Telo mare"},{ name: "Bermuda"},{ name: "Pantaloni"},{ name: "Felpa"},{ name: "Costumi"},{ name: "Accappatoio"},{ name: "Asciugamani"},{ name: "Lenzuola"}] },
+                        { name: "Sopra", collapsed: false, items: [ { name: "Maglie"}, { name: "Polo/camicia"} ] },
+                        { name: "Lato", collapsed: false, items: [ { name: "Cintura"} ] },
+                        { name: "Tasca (Beauty e Intimo)", collapsed: false, items: [{ name: "Mutande"},{ name: "Calze"},{ name: "Crema solare"},{ name: "Deodorante"},{ name: "Shampoo"},{ name: "Phon"},{ name: "Spazzolino"},{ name: "Dentifricio"}] }
                     ]
                 }
             ]
@@ -369,11 +408,8 @@
     function createNewList() {
         let newName = prompt("Nome del nuovo scenario (es. Weekend a Roma):");
         if (newName && newName.trim() !== "") {
-            let key = "list_" + Date.now(); // Genera un ID univoco
-            appData[key] = {
-                name: newName.trim(),
-                sections: []
-            };
+            let key = "list_" + Date.now();
+            appData[key] = { name: newName.trim(), sections: [] };
             currentList = key;
             renderSelector();
             renderApp();
@@ -398,7 +434,7 @@
         }
         if(confirm(`Vuoi davvero eliminare l'intero scenario "${appData[currentList].name}"?`)) {
             delete appData[currentList];
-            currentList = Object.keys(appData)[0]; // Passa alla prima lista disponibile
+            currentList = Object.keys(appData)[0];
             renderSelector();
             renderApp();
             saveData();
@@ -429,7 +465,7 @@
             } catch (err) {
                 alert("❌ Errore durante l'importazione del file JSON.");
             }
-            event.target.value = ''; // Reset
+            event.target.value = '';
         };
         reader.readAsText(file);
     }
