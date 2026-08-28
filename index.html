@@ -13,6 +13,8 @@
             --mise-color: #fef3c7;
             --valigia-color: #dcfce7;
             --skip-color: #f8fafc;
+            --forse-color: #faf5ff;
+            --forse-border: #d8b4fe;
             --buy-color: #fee2e2;
             --primary: #3b82f6;
             --primary-hover: #2563eb;
@@ -26,7 +28,7 @@
         
         .header-app { text-align: center; margin-bottom: 20px; }
         h1 { color: var(--primary); margin: 0 0 5px 0; font-size: 1.8em; letter-spacing: -0.5px; font-weight: 800;}
-        .sync-status { font-size: 0.85em; color: var(--text-muted); font-weight: 500;}
+        .sync-status { font-size: 0.85em; color: #16a34a; font-weight: 600;}
 
         /* Icone SVG */
         .svg-icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -51,14 +53,19 @@
 
         /* Sottosezioni (Tasche, ecc) */
         .subsection { margin-top: 15px; padding-left: 12px; border-left: 3px solid var(--primary); }
-        .subsection-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; margin-bottom: 12px; padding: 5px 0; }
+        .subsection-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 5px 0; border-bottom: 1px dashed transparent;}
+        .subsection-header:hover { border-bottom-color: var(--border); }
+        .subsection-title-area { display: flex; align-items: center; gap: 8px; cursor: pointer; flex-grow: 1; user-select: none; }
         .subsection-title { font-size: 0.95em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
         .subsection-toggle { color: var(--text-muted); transition: transform 0.3s; }
+        .subsection-actions { display: flex; gap: 4px; opacity: 0.4; transition: 0.2s; }
+        .subsection-header:hover .subsection-actions { opacity: 1; }
+        
         .subsection.collapsed .subsection-body { display: none; }
         .subsection.collapsed .subsection-toggle { transform: rotate(-90deg); }
         .subsection.collapsed { border-left-color: #cbd5e1; }
 
-        /* Drag & Drop Styles */
+        /* Drag & Drop */
         .item.dragging { opacity: 0.3; transform: scale(0.98); border: 2px dashed var(--primary); }
         .item.drag-over-item { border-top: 3px solid var(--primary); }
         .subsection-body.drag-over { background: #f1f5f9; border-radius: 8px; padding-bottom: 20px; }
@@ -82,15 +89,17 @@
         .action-btn { background: none; border: none; padding: 6px; cursor: pointer; color: var(--text-muted); border-radius: 6px; display: flex; align-items: center;}
         .action-btn:hover { background: #f1f5f9; color: var(--primary); }
         .action-btn.active-buy { color: var(--danger); opacity: 1; background: #fef2f2;}
+        .action-btn.danger:hover { background: #fee2e2; color: var(--danger); }
 
         /* Colori Stati Valigia */
         .item.status-mise { background-color: var(--mise-color); border-color: #fcd34d; }
         .item.status-valigia { background-color: var(--valigia-color); border-color: #86efac; }
+        .item.status-forse { background-color: var(--forse-color); border-color: var(--forse-border); }
         .item.status-skip { background-color: var(--skip-color); opacity: 0.6; }
         .item.status-skip .item-name { text-decoration: line-through; color: #94a3b8; }
         .item.status-buy { border-color: #fca5a5; border-left: 4px solid var(--danger); }
         
-        /* Controlli Checkbox (Solo Emoji) */
+        /* Controlli Checkbox */
         .controls { display: flex; gap: 8px; flex-shrink: 0;}
         .control-label { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.15em; cursor: pointer; user-select: none; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background-color: #f8fafc; transition: 0.1s;}
         .control-label:hover { background-color: #e2e8f0; }
@@ -101,19 +110,29 @@
         .missing-summary strong { display: block; margin-bottom: 5px; font-size: 1.05em; color: #991b1b; }
         .missing-summary-ok { background: #f0fdf4; border-left-color: #22c55e; color: #166534; }
 
-        /* Lista Da Comprare */
-        .to-buy-summary { background: #fff1f2; border: 1px solid #fecaca; border-radius: 14px; padding: 20px; margin-top: 30px; box-shadow: var(--shadow); }
+        /* Liste in fondo (Compra e Forse) */
+        .summary-box { border-radius: 14px; padding: 20px; margin-top: 25px; box-shadow: var(--shadow); }
+        .to-buy-summary { background: #fff1f2; border: 1px solid #fecaca; }
         .to-buy-summary .section-header { border-bottom-color: #fecaca; }
         .to-buy-summary .section-header span { color: #b91c1c; display: flex; align-items: center; gap: 8px;}
-        .to-buy-list { padding-left: 20px; margin: 10px 0 0 0; color: #7f1d1d; line-height: 1.7; font-size: 0.95em; }
         
-        /* Bottoni Aggiunta */
+        .forse-summary { background: var(--forse-color); border: 1px solid var(--forse-border); }
+        .forse-summary .section-header { border-bottom-color: #e9d5ff; }
+        .forse-summary .section-header span { color: #7e22ce; display: flex; align-items: center; gap: 8px;}
+        
+        .summary-list { padding-left: 20px; margin: 10px 0 0 0; line-height: 1.7; font-size: 0.95em; }
+        .to-buy-summary .summary-list { color: #7f1d1d; }
+        .forse-summary .summary-list { color: #581c87; }
+
+        /* Bottoni */
         .btn-add-item { background-color: transparent; color: var(--primary); width: 100%; margin-top: 5px; padding: 10px; font-size: 0.9em; border-radius: 8px; font-weight: 700; border: 2px dashed #cbd5e1; text-align: left; transition: 0.2s;}
         .btn-add-item:hover { border-color: var(--primary); background-color: #eff6ff; }
         
-        .footer-actions { display: flex; justify-content: space-between; margin-top: 30px; gap: 15px;}
-        .btn-main { background-color: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; font-weight: 700; transition: 0.2s; flex-grow: 1; text-align: center;}
+        .footer-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin-top: 15px;}
+        .btn-main { background-color: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; font-size: 0.95em; font-weight: 700; transition: 0.2s; flex: 1 1 calc(50% - 10px); min-width: 140px; text-align: center;}
         .btn-main:hover { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); }
+        .btn-secondary:hover { background-color: #e2e8f0; }
         .btn-danger-main { background-color: white; color: var(--danger); border: 2px solid #fecaca; }
         .btn-danger-main:hover { background-color: #fef2f2; border-color: var(--danger);}
 
@@ -121,8 +140,9 @@
         @media (max-width: 650px) {
             .item { flex-direction: column; align-items: stretch; gap: 12px; padding: 12px; }
             .item-actions { opacity: 1; justify-content: flex-end; }
-            .controls { display: flex; justify-content: space-between; width: 100%; gap: 6px; }
-            .control-label { flex: 1; padding: 10px 0; }
+            .controls { display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; gap: 6px; }
+            .control-label { flex: 1 1 calc(25% - 6px); padding: 10px 0; font-size: 1.1em;}
+            .subsection-actions { opacity: 1; }
         }
         
         /* Modals */
@@ -149,7 +169,7 @@
 <div class="container">
     <div class="header-app">
         <h1>PackSync App</h1>
-        <div id="sync-status" class="sync-status">Caricamento...</div>
+        <div id="sync-status" class="sync-status">💾 Salvataggio Locale Attivo</div>
     </div>
 
     <div class="list-selector-container">
@@ -159,9 +179,17 @@
 
     <div id="app-root"></div>
     
-    <div class="footer-actions" id="footer" style="display:none;">
-        <button class="btn-main" onclick="openSectionModal()">+ Nuovo Bagaglio</button>
-        <button class="btn-main btn-danger-main" onclick="resetCurrentList()">Azzera Spunte</button>
+    <div id="footer" style="display:none;">
+        <div class="footer-actions">
+            <button class="btn-main" onclick="openSectionModal()">+ Nuovo Bagaglio</button>
+            <button class="btn-main btn-secondary" onclick="exportMarkdown()">📄 Export Notion (.md)</button>
+        </div>
+        <div class="footer-actions">
+            <button class="btn-main btn-secondary" onclick="exportData()">💾 Backup Dati (.json)</button>
+            <button class="btn-main btn-secondary" onclick="document.getElementById('import-file').click()">📂 Importa Backup</button>
+            <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(event)">
+            <button class="btn-main btn-danger-main" onclick="resetCurrentList()">Azzera Spunte</button>
+        </div>
     </div>
 </div>
 
@@ -204,30 +232,29 @@
         eyeOff: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`,
         trash: `<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
         plus: `<svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`,
-        chevron: `<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>`,
+        chevronDown: `<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>`,
         cart: `<svg class="svg-icon svg-mini" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`,
         edit: `<svg class="svg-icon svg-mini" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`,
         grip: `<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M9 5a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm10-14a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`
     };
 
     const defaultData = {
-        "portogallo": {
-            name: "Campo Breve Termine",
+        "georgia": {
+            name: "Campo medio termine (2 sett-2 mesi",
             sections: [
                 {
-                    title: "🎒 Zaino (Sotto il sedile)", hidden: false,
+                    title: "🎒 Zaino", hidden: false,
                     subsections: [
-                        { name: "Lavoro e Documenti", collapsed: false, items: [{ name: "PC portatile (per Obsidian/Zotero)"},{ name: "Caricatore PC e mouse"},{ name: "Documenti per il progetto di volontariato"},{ name: "Carta d'identità / Passaporto"},{ name: "Portafogli"}] },
-                        { name: "Accesso Rapido in Volo", collapsed: false, items: [{ name: "Powerbank e cavi"},{ name: "Cuffiette"},{ name: "Occhiali da vista e custodia"},{ name: "Occhiali da sole"},{ name: "Borraccia vuota (da riempire dopo i controlli)"},{ name: "Snack vegetariani da viaggio (es. frutta secca)"}] },
-                        { name: "Kit Sopravvivenza Rapido", collapsed: false, items: [{ name: "Spazzolino e dentifricio da viaggio"},{ name: "Fazzoletti"},{ name: "Medicine base (es. paracetamolo)"},{ name: "Taccuino o libro"}] }
+                        { name: "Lavoro e Documenti", collapsed: false, items: [{ name: "PC portatile (per tesi ONU / Beacon Project)"},{ name: "Caricatore PC e mouse"},{ name: "Passaporto e Documenti ESC"},{ name: "Portafogli"}] },
+                        { name: "Accesso Rapido in Volo", collapsed: false, items: [{ name: "Powerbank e cavi"},{ name: "Cuffiette"},{ name: "Occhiali da vista e custodia"},{ name: "Occhiali da sole"},{ name: "Borraccia vuota"}] }
                     ]
                 },
                 {
-                    title: "🧳 Cabina (Trolley 55x40x20)", hidden: false,
+                    title: "🧳 Valigia / Stiva", hidden: false,
                     subsections: [
-                        { name: "Vestiario Base", collapsed: false, items: [{ name: "Pantaloni (grigio scuro / khaki)"},{ name: "Bermuda / Pantaloni corti"},{ name: "Camicie (bianche / blu)"},{ name: "T-shirt per il volontariato / sportive"},{ name: "Giacca leggera / K-way"},{ name: "Pigiama"}] },
-                        { name: "Accessori e Scarpe", collapsed: false, items: [{ name: "Scarpe comode per il progetto"},{ name: "Scarpe in pelle di ricambio"},{ name: "Cintura in pelle"},{ name: "Mutande e Calze (n° sufficiente)"},{ name: "Panno in microfibra (se richiesto dal campo)"}] },
-                        { name: "Beauty Case (Busta Trasparente per liquidi)", collapsed: false, items: [{ name: "Shampoo e Bagnoschiuma (< 100ml)"},{ name: "Deodorante"},{ name: "Crema solare"},{ name: "Rasoio e schiuma da barba (< 100ml)"}] }
+                        { name: "Vestiario Classico e Progetto", collapsed: false, items: [{ name: "Camicie (bianche / blu)"},{ name: "Pantaloni (grigio scuro / khaki)"},{ name: "Scarpe in pelle"},{ name: "Scarpe comode / da ginnastica per il progetto"},{ name: "Cintura in pelle"},{ name: "Mutande e Calze"}] },
+                        { name: "Nuovi Acquisti Decathlon", collapsed: false, items: [{ name: "Pantaloni da trekking"},{ name: "Pile (ottimo rapporto Q/P)"},{ name: "Intimo in lana Merino"}] },
+                        { name: "Attrezzatura e Igiene", collapsed: false, items: [{ name: "Beauty case (Decathlon)"},{ name: "Asciugamano in microfibra (Decathlon)"},{ name: "Gavetta (Decathlon)"},{ name: "Shampoo e Bagnoschiuma"},{ name: "Deodorante"},{ name: "Spazzolino e Dentifricio"}] }
                     ]
                 }
             ]
@@ -238,26 +265,15 @@
                 {
                     title: "🎒 Zaino (Sotto il sedile)", hidden: false,
                     subsections: [
-                        { name: "Elettronica e Documenti", collapsed: false, items: [{ name: "Computer con caricatore e mouse"},{ name: "Powerbank"},{ name: "Caricabatterie"},{ name: "Cuffiette"},{ name: "Documenti"},{ name: "Assicurazione sanitaria"},{ name: "Portafogli"},{ name: "Soldi valuta locale"}] },
-                        { name: "Tasca ad Accesso Rapido", collapsed: false, items: [{ name: "Chiavi"},{ name: "Medicine"},{ name: "Borraccia"},{ name: "Occhiali"},{ name: "Occhiali da sole"},{ name: "Ombrello"},{ name: "Fazzoletti"}] },
-                        { name: "Varie e Beauty Rapido", collapsed: false, items: [{ name: "Libro"},{ name: "Lucchetto"},{ name: "Spazzolino"},{ name: "Dentifricio"},{ name: "Burro cacao"},{ name: "Silviette umidificate e disinfettanti"}] }
+                        { name: "Elettronica e Documenti", collapsed: false, items: [{ name: "Computer con caricatore e mouse"},{ name: "Powerbank"},{ name: "Documenti"},{ name: "Portafogli"}] },
+                        { name: "Tasca ad Accesso Rapido", collapsed: false, items: [{ name: "Chiavi"},{ name: "Medicine"},{ name: "Borraccia"},{ name: "Occhiali"}] }
                     ]
                 },
                 {
                     title: "🧳 Cabina (Vestiario Base)", hidden: false,
                     subsections: [
-                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe da passeggio"},{ name: "Pantaloni"},{ name: "Bermuda"},{ name: "Felpa"},{ name: "Giacca a vento / giacca"}] },
-                        { name: "Sopra", collapsed: false, items: [{ name: "Pigiama"},{ name: "Maglie"},{ name: "Polo/camice"},{ name: "Costume"}] },
-                        { name: "Tasca e Incastri", collapsed: false, items: [{ name: "Panno in microfibra piccolo"},{ name: "Mutande"},{ name: "Calze"},{ name: "Cintura"}] }
-                    ]
-                },
-                {
-                    title: "🏔️ Stiva (Zaino Grande/Attrezzatura)", hidden: false,
-                    subsections: [
-                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe da lavoro"},{ name: "Ciabatte"},{ name: "Sacco a pelo"},{ name: "Materassino"},{ name: "Accappatoio"},{ name: "Asciugamani"},{ name: "Lenzuola"}] },
-                        { name: "Sopra (Ingombranti)", collapsed: false, items: [{ name: "Federa"},{ name: "Pile/maglione pesante"}] },
-                        { name: "Tasca / Beauty Case (Liquidi)", collapsed: false, items: [{ name: "Crema solare"},{ name: "Deodorante"},{ name: "Shampoo"},{ name: "Bagno schiuma"},{ name: "Prodotto per capelli"},{ name: "Taglia unghie"},{ name: "Rasoio"},{ name: "Phon"},{ name: "Sapone lavaggio a mano"}] },
-                        { name: "Incastri / Lati", collapsed: false, items: [{ name: "Sacchetti per panni sporchi"},{ name: "Gavetta"},{ name: "Piccola ciabatta multipresa"}] }
+                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe da passeggio"},{ name: "Pantaloni"},{ name: "Bermuda"},{ name: "Felpa"}] },
+                        { name: "Sopra", collapsed: false, items: [{ name: "Pigiama"},{ name: "Maglie"},{ name: "Polo/camicie"}] }
                     ]
                 }
             ]
@@ -266,20 +282,10 @@
             name: "Lista valigia mare",
             sections: [
                 {
-                    title: "🎒 Zaino", hidden: false,
-                    subsections: [
-                        { name: "Documenti e Tech", collapsed: false, items: [{ name: "Telefono"},{ name: "Caricabatterie"},{ name: "Powerbank"},{ name: "Cuffiette"},{ name: "Documenti"},{ name: "Portafogli"}] },
-                        { name: "Accesso Rapido / Tasche", collapsed: false, items: [{ name: "Borraccia"},{ name: "Occhiali da sole"},{ name: "Occhiali"},{ name: "Chiavi"},{ name: "Medicine"}] },
-                        { name: "Altro", collapsed: false, items: [{ name: "Libro"},{ name: "Taccuino"},{ name: "Pigiama"},{ name: "Rasoio"}] }
-                    ]
-                },
-                {
                     title: "🧳 Valigia", hidden: false,
                     subsections: [
-                        { name: "Fondo", collapsed: false, items: [{ name: "Scarpe"},{ name: "Infradito"},{ name: "Telo mare"},{ name: "Bermuda"},{ name: "Pantaloni"},{ name: "Felpa"},{ name: "Costumi"},{ name: "Accappatoio"},{ name: "Asciugamani"},{ name: "Lenzuola"}] },
-                        { name: "Sopra", collapsed: false, items: [ { name: "Maglie"}, { name: "Polo/camicia"} ] },
-                        { name: "Lato", collapsed: false, items: [ { name: "Cintura"} ] },
-                        { name: "Tasca (Beauty e Intimo)", collapsed: false, items: [{ name: "Mutande"},{ name: "Calze"},{ name: "Crema solare"},{ name: "Deodorante"},{ name: "Shampoo"},{ name: "Phon"},{ name: "Spazzolino"},{ name: "Dentifricio"}] }
+                        { name: "Fondo", collapsed: false, items: [{ name: "Infradito"},{ name: "Telo mare"},{ name: "Costumi"},{ name: "Accappatoio"}] },
+                        { name: "Beauty e Intimo", collapsed: false, items: [{ name: "Crema solare"},{ name: "Doposole"},{ name: "Mutande"},{ name: "Calze"}] }
                     ]
                 }
             ]
@@ -287,12 +293,9 @@
     };
 
     let appData = {};
-    let currentList = 'portogallo'; // Impostata di default sulla nuova lista
+    let currentList = 'georgia'; 
     let editSecIdx = -1, editSubIdx = -1, editItemIdx = -1;
     let dragSrc = null;
-
-    const statusEl = document.getElementById('sync-status');
-    function setStatus(text) { statusEl.innerHTML = text; }
 
     function normalizeData(data) {
         if (!data) return JSON.parse(JSON.stringify(defaultData));
@@ -308,6 +311,7 @@
                         if (item.mise === undefined) item.mise = false;
                         if (item.valigia === undefined) item.valigia = false;
                         if (item.skip === undefined) item.skip = false;
+                        if (item.forse === undefined) item.forse = false;
                         if (item.toBuy === undefined) item.toBuy = false;
                     });
                 });
@@ -317,28 +321,83 @@
     }
 
     function loadData() {
-        // Tenta di recuperare i dati salvati in locale (manteniamo la vecchia chiave per non farti perdere nulla)
-        let saved = localStorage.getItem('valigiaSupabase');
+        let saved = localStorage.getItem('packsync_data');
         let parsed = saved ? JSON.parse(saved) : null;
         parsed = normalizeData(parsed);
 
-        // Smart Merge: se aggiungi una nuova lista nel codice (es. portogallo),
-        // ma nel localStorage non c'è, la aggiunge mantenendo intatte le tue vecchie modifiche!
         for (const listKey in defaultData) {
             if (!parsed[listKey]) {
                 parsed[listKey] = JSON.parse(JSON.stringify(defaultData[listKey]));
             }
         }
-
-        setStatus('✅ Dati caricati e salvati in locale');
         return parsed;
     }
 
     function saveData(dataToSave = appData) {
-        localStorage.setItem('valigiaSupabase', JSON.stringify(dataToSave));
-        setStatus('✅ Modifiche salvate in locale');
+        localStorage.setItem('packsync_data', JSON.stringify(dataToSave));
     }
 
+    // -- Export / Import --
+    function exportData() {
+        const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "packsync_backup.json";
+        link.click();
+    }
+
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                appData = normalizeData(data);
+                saveData();
+                renderSelector();
+                renderApp();
+                alert("✅ Backup importato con successo!");
+            } catch (err) {
+                alert("❌ Errore durante l'importazione del file JSON.");
+            }
+            event.target.value = ''; // Reset
+        };
+        reader.readAsText(file);
+    }
+
+    function exportMarkdown() {
+        const list = appData[currentList];
+        let md = `# ${list.name}\n\n`;
+        
+        list.sections.forEach(sec => {
+            md += `## ${sec.title}\n\n`;
+            sec.subsections.forEach(sub => {
+                md += `### ${sub.name}\n`;
+                sub.items.forEach(item => {
+                    let status = '[ ]';
+                    if (item.valigia) status = '[x]';
+                    else if (item.skip) status = '[-]';
+                    else if (item.forse) status = '[?]';
+                    
+                    let buyTag = item.toBuy ? ' **(🛒 Da Comprare)**' : '';
+                    md += `- ${status} ${item.name}${buyTag}\n`;
+                });
+                md += `\n`;
+            });
+        });
+
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = list.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".md";
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // -- Core app logic --
     function renderSelector() {
         const selector = document.getElementById('list-selector');
         selector.innerHTML = '';
@@ -356,15 +415,21 @@
     function toggleField(secIndex, subIndex, itemIndex, field) {
         let item = appData[currentList].sections[secIndex].subsections[subIndex].items[itemIndex];
         item[field] = !item[field];
-        if (field === 'skip' && item.skip) { item.mise = false; item.valigia = false; } 
-        else if ((field === 'mise' || field === 'valigia') && item[field]) { item.skip = false; }
+        
+        if (item[field]) {
+            if (field === 'skip') { item.mise = false; item.valigia = false; item.forse = false; }
+            else if (field === 'mise') { item.skip = false; item.forse = false; }
+            else if (field === 'valigia') { item.skip = false; item.forse = false; }
+            else if (field === 'forse') { item.skip = false; item.mise = false; item.valigia = false; }
+        }
+        
         renderApp(); saveData();
     }
 
     function addItem(secIndex, subIndex) {
         let name = prompt("Nome nuovo oggetto:");
         if (name && name.trim() !== "") {
-            appData[currentList].sections[secIndex].subsections[subIndex].items.push({ name: name.trim(), mise: false, valigia: false, skip: false, toBuy: false });
+            appData[currentList].sections[secIndex].subsections[subIndex].items.push({ name: name.trim(), mise: false, valigia: false, skip: false, forse: false, toBuy: false });
             renderApp(); saveData();
         }
     }
@@ -373,6 +438,24 @@
         let name = prompt("Nome della nuova tasca/scomparto:");
         if (name && name.trim() !== "") {
             appData[currentList].sections[secIndex].subsections.push({ name: name.trim(), collapsed: false, items: [] });
+            renderApp(); saveData();
+        }
+    }
+
+    function editSubsection(secIndex, subIndex, event) {
+        event.stopPropagation();
+        let currentName = appData[currentList].sections[secIndex].subsections[subIndex].name;
+        let name = prompt("Rinomina la tasca/scomparto:", currentName);
+        if (name && name.trim() !== "") {
+            appData[currentList].sections[secIndex].subsections[subIndex].name = name.trim();
+            renderApp(); saveData();
+        }
+    }
+
+    function deleteSubsection(secIndex, subIndex, event) {
+        event.stopPropagation();
+        if(confirm("Sei sicuro di voler eliminare questa tasca e TUTTI gli oggetti al suo interno?")) {
+            appData[currentList].sections[secIndex].subsections.splice(subIndex, 1);
             renderApp(); saveData();
         }
     }
@@ -394,6 +477,7 @@
         }
     }
 
+    // -- Drag & Drop --
     function handleDragStart(e, sec, sub, item) {
         dragSrc = {sec, sub, item};
         e.dataTransfer.effectAllowed = 'move';
@@ -405,17 +489,10 @@
         document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
         document.querySelectorAll('.drag-over-item').forEach(el => el.classList.remove('drag-over-item'));
     }
-    function handleDragOverItem(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.dataTransfer.dropEffect = 'move';
-        e.currentTarget.classList.add('drag-over-item');
-    }
+    function handleDragOverItem(e) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-over-item'); }
     function handleDragLeaveItem(e) { e.currentTarget.classList.remove('drag-over-item'); }
     function handleDropItem(e, targetSec, targetSub, targetItem) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.currentTarget.classList.remove('drag-over-item');
+        e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove('drag-over-item');
         if (!dragSrc || (dragSrc.sec === targetSec && dragSrc.sub === targetSub && dragSrc.item === targetItem)) return;
 
         const itemObj = appData[currentList].sections[dragSrc.sec].subsections[dragSrc.sub].items.splice(dragSrc.item, 1)[0];
@@ -423,28 +500,20 @@
         if (dragSrc.sec === targetSec && dragSrc.sub === targetSub && dragSrc.item < targetItem) { insertIdx -= 1; }
         
         appData[currentList].sections[targetSec].subsections[targetSub].items.splice(insertIdx, 0, itemObj);
-        dragSrc = null;
-        renderApp(); saveData();
+        dragSrc = null; renderApp(); saveData();
     }
-    function handleDragOverArea(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        e.currentTarget.classList.add('drag-over');
-    }
-    function handleDragLeaveArea(e) {
-        if(e.currentTarget && e.relatedTarget && !e.currentTarget.contains(e.relatedTarget)) e.currentTarget.classList.remove('drag-over');
-    }
+    function handleDragOverArea(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-over'); }
+    function handleDragLeaveArea(e) { if(e.currentTarget && e.relatedTarget && !e.currentTarget.contains(e.relatedTarget)) e.currentTarget.classList.remove('drag-over'); }
     function handleDropArea(e, targetSec, targetSub) {
-        e.preventDefault();
-        e.currentTarget.classList.remove('drag-over');
+        e.preventDefault(); e.currentTarget.classList.remove('drag-over');
         if (!dragSrc || (dragSrc.sec === targetSec && dragSrc.sub === targetSub)) return; 
 
         const itemObj = appData[currentList].sections[dragSrc.sec].subsections[dragSrc.sub].items.splice(dragSrc.item, 1)[0];
         appData[currentList].sections[targetSec].subsections[targetSub].items.push(itemObj);
-        dragSrc = null;
-        renderApp(); saveData();
+        dragSrc = null; renderApp(); saveData();
     }
 
+    // -- Modals --
     function openSectionModal() {
         document.getElementById('new-sec-type').value = "🎒 Zaino";
         document.getElementById('new-sec-custom').style.display = 'none';
@@ -504,8 +573,10 @@
     }
     function closeModal(modalId) { document.getElementById(modalId).close(); }
     function resetCurrentList() {
-        if(confirm("Vuoi azzerare le spunte (Mise/Valigia/No/Compra) di TUTTI gli oggetti in questo scenario?")) {
-            appData[currentList].sections.forEach(sec => sec.subsections.forEach(sub => sub.items.forEach(item => { item.mise = false; item.valigia = false; item.skip = false; item.toBuy = false; })));
+        if(confirm("Vuoi azzerare le spunte di TUTTI gli oggetti in questo scenario?")) {
+            appData[currentList].sections.forEach(sec => sec.subsections.forEach(sub => sub.items.forEach(item => { 
+                item.mise = false; item.valigia = false; item.skip = false; item.forse = false; item.toBuy = false; 
+            })));
             renderApp(); saveData();
         }
     }
@@ -521,6 +592,7 @@
         }
 
         let toBuyItems = []; 
+        let forseItems = [];
 
         sectionsData.forEach((section, sIndex) => {
             const secDiv = document.createElement('div');
@@ -548,11 +620,24 @@
                 
                 const subHeader = document.createElement('div');
                 subHeader.className = 'subsection-header';
-                subHeader.onclick = () => toggleSubsection(sIndex, subIndex);
-                subHeader.innerHTML = `
+                
+                const subTitleArea = document.createElement('div');
+                subTitleArea.className = 'subsection-title-area';
+                subTitleArea.onclick = () => toggleSubsection(sIndex, subIndex);
+                subTitleArea.innerHTML = `
+                    <div class="subsection-toggle">${ICONS.chevronDown}</div>
                     <div class="subsection-title">📍 ${sub.name}</div>
-                    <div class="subsection-toggle">${ICONS.chevron}</div>
                 `;
+
+                const subActions = document.createElement('div');
+                subActions.className = 'subsection-actions';
+                subActions.innerHTML = `
+                    <button class="action-btn" title="Rinomina Tasca" onclick="editSubsection(${sIndex}, ${subIndex}, event)">${ICONS.edit}</button>
+                    <button class="action-btn danger" title="Elimina Tasca" onclick="deleteSubsection(${sIndex}, ${subIndex}, event)">${ICONS.trash}</button>
+                `;
+
+                subHeader.appendChild(subTitleArea);
+                subHeader.appendChild(subActions);
                 subDiv.appendChild(subHeader);
 
                 const subBody = document.createElement('div');
@@ -574,14 +659,15 @@
 
                     if (item.skip) itemDiv.classList.add('status-skip');
                     else if (item.valigia) itemDiv.classList.add('status-valigia');
+                    else if (item.forse) itemDiv.classList.add('status-forse');
                     else if (item.mise) itemDiv.classList.add('status-mise');
                     else if (item.toBuy) itemDiv.classList.add('status-buy');
 
-                    if (!item.skip && !item.valigia) missingItems.push(item.name);
+                    if (!item.skip && !item.valigia && !item.forse) missingItems.push(item.name);
                     
-                    if (item.toBuy) {
-                        toBuyItems.push({ name: item.name, location: `${section.title.split(' (')[0]} - ${sub.name}` });
-                    }
+                    let loc = `${section.title.split(' (')[0]} - ${sub.name}`;
+                    if (item.toBuy) toBuyItems.push({ name: item.name, location: loc });
+                    if (item.forse) forseItems.push({ name: item.name, location: loc });
 
                     const headerDiv = document.createElement('div');
                     headerDiv.className = 'item-header';
@@ -600,7 +686,7 @@
                     actionsDiv.className = 'item-actions';
                     actionsDiv.innerHTML = `
                         <button class="action-btn ${item.toBuy ? 'active-buy' : ''}" title="Da Comprare" onclick="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'toBuy')">${ICONS.cart}</button>
-                        <button class="action-btn" title="Modifica" onclick="openEditModal(${sIndex}, ${subIndex}, ${iIndex})">${ICONS.edit}</button>
+                        <button class="action-btn" title="Modifica Oggetto" onclick="openEditModal(${sIndex}, ${subIndex}, ${iIndex})">${ICONS.edit}</button>
                     `;
                     
                     headerDiv.appendChild(dragDiv);
@@ -616,6 +702,9 @@
                         <label class="control-label" title="In Valigia">
                             <input type="checkbox" ${item.valigia ? 'checked' : ''} onchange="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'valigia')">🧳
                         </label>
+                        <label class="control-label" title="Forse / Da decidere">
+                            <input type="checkbox" ${item.forse ? 'checked' : ''} onchange="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'forse')">❓
+                        </label>
                         <label class="control-label" title="Non Serve">
                             <input type="checkbox" ${item.skip ? 'checked' : ''} onchange="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'skip')">❌
                         </label>
@@ -628,7 +717,7 @@
 
                 const addBtn = document.createElement('button');
                 addBtn.className = 'btn-add-item';
-                addBtn.textContent = '+ Aggiungi oggetto in questa tasca...';
+                addBtn.textContent = '+ Aggiungi oggetto...';
                 addBtn.onclick = () => addItem(sIndex, subIndex);
                 subBody.appendChild(addBtn);
 
@@ -642,7 +731,7 @@
                 summaryDiv.innerHTML = `<strong>Ancora fuori dalla valigia:</strong> ${missingItems.join(', ')}`;
             } else {
                 summaryDiv.className = 'missing-summary missing-summary-ok';
-                summaryDiv.innerHTML = `<strong>✅ Tutto dentro!</strong> Bagaglio completo e pronto.`;
+                summaryDiv.innerHTML = `<strong>✅ Tutto dentro (o segnato)!</strong> Bagaglio sotto controllo.`;
             }
             body.appendChild(summaryDiv);
 
@@ -650,15 +739,31 @@
             root.appendChild(secDiv);
         });
 
+        // Box Forse
+        if (forseItems.length > 0) {
+            const forseContainer = document.createElement('div');
+            forseContainer.className = 'summary-box forse-summary';
+            forseContainer.innerHTML = `
+                <div class="section-header">
+                    <span>🤔 Da valutare (Forse)</span>
+                </div>
+                <ul class="summary-list">
+                    ${forseItems.map(i => `<li><strong>${i.name}</strong> <span style="font-size: 0.85em;">(${i.location})</span></li>`).join('')}
+                </ul>
+            `;
+            root.appendChild(forseContainer);
+        }
+
+        // Box Comprare
         if (toBuyItems.length > 0) {
             const buyContainer = document.createElement('div');
-            buyContainer.className = 'to-buy-summary';
+            buyContainer.className = 'summary-box to-buy-summary';
             buyContainer.innerHTML = `
                 <div class="section-header">
                     <span>${ICONS.cart} Lista della Spesa</span>
                 </div>
-                <ul class="to-buy-list">
-                    ${toBuyItems.map(i => `<li><strong>${i.name}</strong> <span style="color:var(--text-muted); font-size: 0.85em;">(Destinazione: ${i.location})</span></li>`).join('')}
+                <ul class="summary-list">
+                    ${toBuyItems.map(i => `<li><strong>${i.name}</strong> <span style="font-size: 0.85em;">(${i.location})</span></li>`).join('')}
                 </ul>
             `;
             root.appendChild(buyContainer);
@@ -669,7 +774,7 @@
         appData = loadData();
         renderSelector();
         renderApp();
-        document.getElementById('footer').style.display = 'flex';
+        document.getElementById('footer').style.display = 'block';
     }
 
     init();
