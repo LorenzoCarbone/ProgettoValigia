@@ -359,15 +359,17 @@
 
     function loadData() {
         let saved = localStorage.getItem('packsync_data');
-        let parsed = saved ? JSON.parse(saved) : null;
-        parsed = normalizeData(parsed);
-
-        for (const listKey in defaultData) {
-            if (!parsed[listKey]) {
-                parsed[listKey] = JSON.parse(JSON.stringify(defaultData[listKey]));
-            }
+        
+        // Se non c'è nessun salvataggio in memoria (primissimo avvio assoluto)
+        if (!saved) {
+            let initialData = JSON.parse(JSON.stringify(defaultData));
+            return normalizeData(initialData);
         }
-        return parsed;
+
+        // Se c'è un salvataggio, carica esattamente quello che hai lasciato tu
+        // senza resuscitare forzatamente le liste cancellate
+        let parsed = JSON.parse(saved);
+        return normalizeData(parsed);
     }
 
     function saveData(dataToSave = appData) {
