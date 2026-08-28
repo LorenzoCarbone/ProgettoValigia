@@ -98,6 +98,12 @@
         .action-btn.active-buy { color: var(--danger); opacity: 1; background: #fef2f2;}
         .action-btn.danger:hover { background: #fee2e2; color: var(--danger); opacity: 1;}
 
+        /* Controlli Checkbox (modificati in bottoni emoji) */
+        .controls { display: flex; gap: 8px; flex-shrink: 0;}
+        .control-label { display: flex; align-items: center; justify-content: center; font-size: 1.15em; cursor: pointer; user-select: none; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background-color: #f8fafc; transition: 0.1s;}
+        .control-label:hover { background-color: #e2e8f0; filter: brightness(0.95); transform: scale(1.05);}
+        .control-label:active { transform: scale(0.95); }
+        
         /* Colori Stati Valigia */
         .item.status-mise { background-color: var(--mise-color); border-color: #fcd34d; }
         .item.status-valigia { background-color: var(--valigia-color); border-color: #86efac; }
@@ -105,12 +111,6 @@
         .item.status-skip { background-color: var(--skip-color); opacity: 0.6; }
         .item.status-skip .item-name { text-decoration: line-through; color: #94a3b8; }
         .item.status-buy { border-color: #fca5a5; border-left: 4px solid var(--danger); }
-        
-        /* Controlli Checkbox (modificati in bottoni emoji) */
-        .controls { display: flex; gap: 8px; flex-shrink: 0;}
-        .control-label { display: flex; align-items: center; justify-content: center; font-size: 1.15em; cursor: pointer; user-select: none; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background-color: #f8fafc; transition: 0.1s;}
-        .control-label:hover { background-color: #e2e8f0; filter: brightness(0.95); transform: scale(1.05);}
-        .control-label:active { transform: scale(0.95); }
         
         /* Sommari */
         .missing-summary { font-size: 0.9em; color: #b91c1c; margin: 20px 0 10px 0; padding: 15px; background: #fef2f2; border-radius: 10px; border-left: 4px solid #ef4444; line-height: 1.5;}
@@ -131,7 +131,7 @@
         .to-buy-summary .summary-list { color: #7f1d1d; }
         .forse-summary .summary-list { color: #581c87; }
 
-        /* Input In-line (Sostituisce il bottone aggiungi vecchio) */
+        /* Input In-line */
         .inline-add-input { background-color: transparent; color: var(--text-main); width: 100%; margin-top: 5px; padding: 12px; font-size: 0.95em; border-radius: 8px; font-weight: 600; border: 2px dashed #cbd5e1; text-align: left; transition: 0.2s; box-sizing: border-box; outline: none; }
         .inline-add-input:focus { border-color: var(--primary); background-color: #eff6ff; }
         .inline-add-input::placeholder { color: var(--text-muted); font-weight: 700; opacity: 0.7; }
@@ -210,7 +210,7 @@
     </div>
 </div>
 
-<!-- Modal Aggiungi Bagaglio (Mantenuto solo questo) -->
+<!-- Modal Aggiungi Bagaglio -->
 <dialog id="modal-section">
     <h3>Nuovo Bagaglio</h3>
     <select id="new-sec-type" onchange="checkCustomOption()">
@@ -328,7 +328,7 @@
     let appData = {};
     let currentList = 'georgia'; 
     let dragSrc = null;
-    let focusAfterRender = null; // Mantiene il focus sull'input dopo l'aggiunta
+    let focusAfterRender = null; 
 
     function normalizeData(data) {
         if (!data) return JSON.parse(JSON.stringify(defaultData));
@@ -498,6 +498,7 @@
 
     function addItemInline(secIndex, subIndex, inputId) {
         let inputEl = document.getElementById(inputId);
+        if(!inputEl) return;
         let name = inputEl.value.trim();
         if (name !== "") {
             appData[currentList].sections[secIndex].subsections[subIndex].items.push({ name: name, mise: false, valigia: false, skip: false, forse: false, toBuy: false });
@@ -582,7 +583,7 @@
         dragSrc = null; renderApp(); saveData();
     }
 
-    // -- Modals (Rimasto solo nuovo bagaglio) --
+    // -- Modals --
     function openSectionModal() {
         document.getElementById('new-sec-type').value = "🎒 Zaino";
         document.getElementById('new-sec-custom').style.display = 'none';
@@ -611,6 +612,12 @@
     }
 
     function renderApp() {
+        // FIX FONDAMENTALE: Se hai un titolo "aperto/selezionato" e fai scattare un re-render, 
+        // forziamo il salvataggio PRIMA di distruggere il DOM per evitare bug di lettura testo (innerText vuoto)
+        if (document.activeElement && document.activeElement.hasAttribute('contenteditable')) {
+            document.activeElement.blur(); 
+        }
+
         const root = document.getElementById('app-root');
         root.innerHTML = '';
         const sectionsData = appData[currentList].sections;
@@ -629,10 +636,12 @@
             
             const header = document.createElement('div');
             header.className = 'section-header';
+            
+            // Usato textContent invece di innerText per maggiore stabilità
             header.innerHTML = `
                 <div class="editable-title">
                     <span contenteditable="true" spellcheck="false"
-                          onblur="appData[currentList].sections[${sIndex}].title = this.innerText.trim() || 'Bagaglio'; saveData();"
+                          onblur="appData[currentList].sections[${sIndex}].title = this.textContent.trim() || 'Bagaglio'; saveData();"
                           onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}"
                           title="Clicca per rinominare">${section.title}</span>
                 </div>
@@ -657,17 +666,18 @@
                 
                 const subTitleArea = document.createElement('div');
                 subTitleArea.className = 'subsection-title-area';
-                // Toggle al click (ma evito di scatenarlo se clicco sul testo per editare)
                 subTitleArea.onclick = (e) => {
                     if (e.target.hasAttribute('contenteditable')) return;
                     toggleSubsection(sIndex, subIndex);
                 };
                 
+                // Pin 📍 spostato fuori per evitare fastidiose duplicazioni
                 subTitleArea.innerHTML = `
                     <div class="subsection-toggle">${ICONS.chevronDown}</div>
+                    <span style="font-size: 0.95em; color: var(--text-muted); margin-right: 2px;">📍</span>
                     <div class="subsection-title" contenteditable="true" spellcheck="false"
-                         onblur="appData[currentList].sections[${sIndex}].subsections[${subIndex}].name = this.innerText.trim() || 'Scomparto'; saveData();"
-                         onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}" title="Clicca per rinominare">📍 ${sub.name}</div>
+                         onblur="appData[currentList].sections[${sIndex}].subsections[${subIndex}].name = this.textContent.trim() || 'Scomparto'; saveData();"
+                         onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}" title="Clicca per rinominare">${sub.name}</div>
                 `;
 
                 const subActions = document.createElement('div');
@@ -719,7 +729,7 @@
                     const nameArea = document.createElement('div');
                     nameArea.className = 'item-name-area';
                     let nameHtml = `<div class="item-name" contenteditable="true" spellcheck="false"
-                                          onblur="appData[currentList].sections[${sIndex}].subsections[${subIndex}].items[${iIndex}].name = this.innerText.trim() || 'Oggetto'; saveData();"
+                                          onblur="appData[currentList].sections[${sIndex}].subsections[${subIndex}].items[${iIndex}].name = this.textContent.trim() || 'Oggetto'; saveData();"
                                           onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}" title="Clicca per rinominare">${item.name}</div>`;
                     if (item.toBuy) nameHtml += `<div class="badge-buy">🛒 Da Comprare</div>`;
                     nameArea.innerHTML = nameHtml;
@@ -735,7 +745,6 @@
                     headerDiv.appendChild(nameArea);
                     headerDiv.appendChild(actionsDiv);
 
-                    // I controlli modificati, senza checkbox, ma cliccabili direttamente
                     const controlsDiv = document.createElement('div');
                     controlsDiv.className = 'controls';
                     controlsDiv.innerHTML = `
@@ -750,7 +759,6 @@
                     subBody.appendChild(itemDiv);
                 });
 
-                // Aggiunta inline rapida
                 const addInputId = `add-input-${sIndex}-${subIndex}`;
                 const addInput = document.createElement('input');
                 addInput.type = 'text';
@@ -783,7 +791,6 @@
             root.appendChild(secDiv);
         });
 
-        // Box Forse
         if (forseItems.length > 0) {
             const forseContainer = document.createElement('div');
             forseContainer.className = 'summary-box forse-summary';
@@ -798,7 +805,6 @@
             root.appendChild(forseContainer);
         }
 
-        // Box Comprare
         if (toBuyItems.length > 0) {
             const buyContainer = document.createElement('div');
             buyContainer.className = 'summary-box to-buy-summary';
@@ -813,7 +819,6 @@
             root.appendChild(buyContainer);
         }
 
-        // Rimette il focus sull'input di aggiunta per un flusso continuo se l'utente sta aggiungendo a raffica
         if (focusAfterRender) {
             const el = document.getElementById(focusAfterRender);
             if (el) { el.focus(); el.value = ''; }
