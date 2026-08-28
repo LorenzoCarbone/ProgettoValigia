@@ -35,9 +35,10 @@
         .svg-mini { width: 16px; height: 16px; }
 
         /* Menu Liste */
-        .list-selector-container { background: var(--card-bg); padding: 12px 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px; }
-        .list-selector-container select { flex-grow: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 1.05em; font-weight: 600; color: var(--text-main); background-color: #f8fafc; cursor: pointer; outline: none;}
+        .list-selector-container { background: var(--card-bg); padding: 12px 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;}
+        .list-selector-container select { flex-grow: 1; min-width: 150px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 1.05em; font-weight: 600; color: var(--text-main); background-color: #f8fafc; cursor: pointer; outline: none;}
         .list-selector-container select:focus { border-color: var(--primary); }
+        .list-actions { display: flex; gap: 4px; }
 
         /* Bagagli (Sezioni) */
         .section { background: var(--card-bg); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); transition: opacity 0.3s; }
@@ -45,7 +46,14 @@
         .section.hidden-sec { opacity: 0.6; }
         
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
-        .section-header span { font-size: 1.25em; font-weight: 800; line-height: 1.2;}
+        
+        /* Modifica Titolo Smart */
+        .editable-title { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; margin-left: -8px; border-radius: 8px; transition: 0.2s; }
+        .editable-title span { font-size: 1.25em; font-weight: 800; line-height: 1.2; }
+        .editable-title .edit-icon { opacity: 0; color: var(--text-muted); display: flex; transition: 0.2s; transform: scale(0.9); }
+        .editable-title:hover { background-color: #f1f5f9; }
+        .editable-title:hover .edit-icon { opacity: 1; }
+        
         .sec-actions { display: flex; gap: 6px; }
         .icon-btn { background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; padding: 8px; color: var(--text-muted); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .icon-btn:hover { background: #e2e8f0; color: var(--text-main); }
@@ -110,7 +118,7 @@
         .missing-summary strong { display: block; margin-bottom: 5px; font-size: 1.05em; color: #991b1b; }
         .missing-summary-ok { background: #f0fdf4; border-left-color: #22c55e; color: #166534; }
 
-        /* Liste in fondo (Compra e Forse) */
+        /* Liste in fondo */
         .summary-box { border-radius: 14px; padding: 20px; margin-top: 25px; box-shadow: var(--shadow); }
         .to-buy-summary { background: #fff1f2; border: 1px solid #fecaca; }
         .to-buy-summary .section-header { border-bottom-color: #fecaca; }
@@ -143,6 +151,7 @@
             .controls { display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; gap: 6px; }
             .control-label { flex: 1 1 calc(25% - 6px); padding: 10px 0; font-size: 1.1em;}
             .subsection-actions { opacity: 1; }
+            .editable-title .edit-icon { opacity: 1; }
         }
         
         /* Modals */
@@ -173,8 +182,13 @@
     </div>
 
     <div class="list-selector-container">
-        <svg class="svg-icon" style="color:var(--primary)" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <svg class="svg-icon" style="color:var(--primary); display:block;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         <select id="list-selector" onchange="switchList(this.value)"></select>
+        <div class="list-actions">
+            <button class="action-btn" title="Nuovo Scenario (Nuova Lista)" onclick="createNewList()">${ICONS.plus}</button>
+            <button class="action-btn" title="Rinomina Scenario" onclick="renameCurrentList()">${ICONS.edit}</button>
+            <button class="action-btn danger" title="Elimina Scenario" onclick="deleteCurrentList()">${ICONS.trash}</button>
+        </div>
     </div>
 
     <div id="app-root"></div>
@@ -240,10 +254,10 @@
 
     const defaultData = {
         "georgia": {
-            name: "Campo medio termine (2 sett-2 mesi",
+            name: "🇬🇪 Georgia (Volontariato ESC)",
             sections: [
                 {
-                    title: "🎒 Zaino", hidden: false,
+                    title: "🎒 Zaino (Nuovo Decathlon - Sotto il sedile)", hidden: false,
                     subsections: [
                         { name: "Lavoro e Documenti", collapsed: false, items: [{ name: "PC portatile (per tesi ONU / Beacon Project)"},{ name: "Caricatore PC e mouse"},{ name: "Passaporto e Documenti ESC"},{ name: "Portafogli"}] },
                         { name: "Accesso Rapido in Volo", collapsed: false, items: [{ name: "Powerbank e cavi"},{ name: "Cuffiette"},{ name: "Occhiali da vista e custodia"},{ name: "Occhiali da sole"},{ name: "Borraccia vuota"}] }
@@ -337,6 +351,60 @@
         localStorage.setItem('packsync_data', JSON.stringify(dataToSave));
     }
 
+    // -- Gestione Liste/Scenari --
+    function renderSelector() {
+        const selector = document.getElementById('list-selector');
+        selector.innerHTML = '';
+        for (const [key, listObj] of Object.entries(appData)) {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = listObj.name;
+            if (key === currentList) opt.selected = true;
+            selector.appendChild(opt);
+        }
+    }
+
+    function switchList(listKey) { currentList = listKey; renderApp(); }
+
+    function createNewList() {
+        let newName = prompt("Nome del nuovo scenario (es. Weekend a Roma):");
+        if (newName && newName.trim() !== "") {
+            let key = "list_" + Date.now(); // Genera un ID univoco
+            appData[key] = {
+                name: newName.trim(),
+                sections: []
+            };
+            currentList = key;
+            renderSelector();
+            renderApp();
+            saveData();
+        }
+    }
+
+    function renameCurrentList() {
+        let newName = prompt("Rinomina questo scenario:", appData[currentList].name);
+        if (newName && newName.trim() !== "") {
+            appData[currentList].name = newName.trim();
+            renderSelector();
+            saveData();
+        }
+    }
+
+    function deleteCurrentList() {
+        let listKeys = Object.keys(appData);
+        if (listKeys.length <= 1) {
+            alert("Non puoi eliminare l'unica lista rimanente!");
+            return;
+        }
+        if(confirm(`Vuoi davvero eliminare l'intero scenario "${appData[currentList].name}"?`)) {
+            delete appData[currentList];
+            currentList = Object.keys(appData)[0]; // Passa alla prima lista disponibile
+            renderSelector();
+            renderApp();
+            saveData();
+        }
+    }
+
     // -- Export / Import --
     function exportData() {
         const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
@@ -398,20 +466,6 @@
     }
 
     // -- Core app logic --
-    function renderSelector() {
-        const selector = document.getElementById('list-selector');
-        selector.innerHTML = '';
-        for (const [key, listObj] of Object.entries(appData)) {
-            const opt = document.createElement('option');
-            opt.value = key;
-            opt.textContent = listObj.name;
-            if (key === currentList) opt.selected = true;
-            selector.appendChild(opt);
-        }
-    }
-
-    function switchList(listKey) { currentList = listKey; renderApp(); }
-
     function toggleField(secIndex, subIndex, itemIndex, field) {
         let item = appData[currentList].sections[secIndex].subsections[subIndex].items[itemIndex];
         item[field] = !item[field];
@@ -464,6 +518,15 @@
         appData[currentList].sections[secIndex].hidden = !appData[currentList].sections[secIndex].hidden;
         renderApp(); saveData();
     }
+    
+    function renameSection(secIndex) {
+        let newName = prompt("Rinomina bagaglio:", appData[currentList].sections[secIndex].title);
+        if (newName && newName.trim() !== "") {
+            appData[currentList].sections[secIndex].title = newName.trim();
+            renderApp();
+            saveData();
+        }
+    }
 
     function toggleSubsection(secIndex, subIndex) {
         appData[currentList].sections[secIndex].subsections[subIndex].collapsed = !appData[currentList].sections[secIndex].subsections[subIndex].collapsed;
@@ -471,7 +534,7 @@
     }
 
     function deleteSection(secIndex) {
-        if(confirm("Eliminare definitivamente questo bagaglio?")) {
+        if(confirm("Eliminare definitivamente questo bagaglio e tutto il contenuto?")) {
             appData[currentList].sections.splice(secIndex, 1);
             renderApp(); saveData();
         }
@@ -587,7 +650,7 @@
         const sectionsData = appData[currentList].sections;
 
         if(sectionsData.length === 0) {
-            root.innerHTML = '<p style="text-align:center; color:#888;">Nessun bagaglio presente. Aggiungine uno!</p>';
+            root.innerHTML = '<p style="text-align:center; color:#888;">Nessun bagaglio presente in questo scenario. Aggiungine uno!</p>';
             return;
         }
 
@@ -601,7 +664,10 @@
             const header = document.createElement('div');
             header.className = 'section-header';
             header.innerHTML = `
-                <span>${section.title}</span>
+                <div class="editable-title" onclick="renameSection(${sIndex})" title="Rinomina Bagaglio">
+                    <span>${section.title}</span>
+                    <div class="edit-icon">${ICONS.edit}</div>
+                </div>
                 <div class="sec-actions">
                     <button class="icon-btn" title="Aggiungi Tasca/Scomparto" onclick="addSubsection(${sIndex})">${ICONS.plus}</button>
                     <button class="icon-btn" title="Mostra/Nascondi Bagaglio" onclick="toggleSectionHidden(${sIndex})">${section.hidden ? ICONS.eyeOff : ICONS.eye}</button>
