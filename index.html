@@ -142,8 +142,6 @@
         .btn-delete { background: var(--danger); color: white; }
         .btn-delete:hover { background: #dc2626; }
 
-        .loader { border: 2px solid #f3f3f3; border-top: 2px solid var(--primary); border-radius: 50%; width: 12px; height: 12px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -151,7 +149,7 @@
 <div class="container">
     <div class="header-app">
         <h1>PackSync App</h1>
-        <div id="sync-status" class="sync-status">Caricamento in corso...</div>
+        <div id="sync-status" class="sync-status">Caricamento...</div>
     </div>
 
     <div class="list-selector-container">
@@ -201,10 +199,6 @@
 </dialog>
 
 <script>
-    // --- DATABASE SUPABASE CLOUD ---
-    const SUPABASE_URL = 'https://qikswdfoegiyktfxfnsz.supabase.co'; 
-    const SUPABASE_KEY = 'sb_publishable_TNINUDnCq-B2rRL-lgMtiw_Xj9H2ia1';
-
     const ICONS = {
         eye: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
         eyeOff: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`,
@@ -217,6 +211,27 @@
     };
 
     const defaultData = {
+        "portogallo": {
+            name: "🇵🇹 Portogallo (Campo Breve Termine)",
+            sections: [
+                {
+                    title: "🎒 Zaino (Sotto il sedile)", hidden: false,
+                    subsections: [
+                        { name: "Lavoro e Documenti", collapsed: false, items: [{ name: "PC portatile (per Obsidian/Zotero)"},{ name: "Caricatore PC e mouse"},{ name: "Documenti per il progetto di volontariato"},{ name: "Carta d'identità / Passaporto"},{ name: "Portafogli"}] },
+                        { name: "Accesso Rapido in Volo", collapsed: false, items: [{ name: "Powerbank e cavi"},{ name: "Cuffiette"},{ name: "Occhiali da vista e custodia"},{ name: "Occhiali da sole"},{ name: "Borraccia vuota (da riempire dopo i controlli)"},{ name: "Snack vegetariani da viaggio (es. frutta secca)"}] },
+                        { name: "Kit Sopravvivenza Rapido", collapsed: false, items: [{ name: "Spazzolino e dentifricio da viaggio"},{ name: "Fazzoletti"},{ name: "Medicine base (es. paracetamolo)"},{ name: "Taccuino o libro"}] }
+                    ]
+                },
+                {
+                    title: "🧳 Cabina (Trolley 55x40x20)", hidden: false,
+                    subsections: [
+                        { name: "Vestiario Base", collapsed: false, items: [{ name: "Pantaloni (grigio scuro / khaki)"},{ name: "Bermuda / Pantaloni corti"},{ name: "Camicie (bianche / blu)"},{ name: "T-shirt per il volontariato / sportive"},{ name: "Giacca leggera / K-way"},{ name: "Pigiama"}] },
+                        { name: "Accessori e Scarpe", collapsed: false, items: [{ name: "Scarpe comode per il progetto"},{ name: "Scarpe in pelle di ricambio"},{ name: "Cintura in pelle"},{ name: "Mutande e Calze (n° sufficiente)"},{ name: "Panno in microfibra (se richiesto dal campo)"}] },
+                        { name: "Beauty Case (Busta Trasparente per liquidi)", collapsed: false, items: [{ name: "Shampoo e Bagnoschiuma (< 100ml)"},{ name: "Deodorante"},{ name: "Crema solare"},{ name: "Rasoio e schiuma da barba (< 100ml)"}] }
+                    ]
+                }
+            ]
+        },
         "medioLungo": {
             name: "Viaggi medio lunghi (2 sett - 2 mesi)",
             sections: [
@@ -272,16 +287,17 @@
     };
 
     let appData = {};
-    let currentList = 'medioLungo';
+    let currentList = 'portogallo'; // Impostata di default sulla nuova lista
     let editSecIdx = -1, editSubIdx = -1, editItemIdx = -1;
     let dragSrc = null;
 
     const statusEl = document.getElementById('sync-status');
-    function setStatus(text, isLoading) { statusEl.innerHTML = isLoading ? `<span class="loader"></span> ${text}` : text; }
+    function setStatus(text) { statusEl.innerHTML = text; }
 
     function normalizeData(data) {
-        if (!data || !data.medioLungo || !data.medioLungo.sections) return JSON.parse(JSON.stringify(defaultData));
+        if (!data) return JSON.parse(JSON.stringify(defaultData));
         Object.keys(data).forEach(listKey => {
+            if(!data[listKey].sections) return;
             data[listKey].sections.forEach(sec => {
                 if (sec.hidden === undefined) sec.hidden = false;
                 if (!sec.subsections) sec.subsections = [];
@@ -300,51 +316,27 @@
         return data;
     }
 
-    async function loadData() {
-        let localData = normalizeData(JSON.parse(localStorage.getItem('valigiaSupabase')));
-        setStatus('Scaricamento dal database...', true);
-        try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/valigie?id=eq.1`, { 
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
-            });
-            if(!res.ok) throw new Error('Errore lettura');
-            const data = await res.json();
-            
-            if (!data || data.length === 0 || !data[0].dati || !data[0].dati.medioLungo) {
-                const initData = normalizeData(defaultData);
-                await saveData(initData); 
-                return initData;
+    function loadData() {
+        // Tenta di recuperare i dati salvati in locale (manteniamo la vecchia chiave per non farti perdere nulla)
+        let saved = localStorage.getItem('valigiaSupabase');
+        let parsed = saved ? JSON.parse(saved) : null;
+        parsed = normalizeData(parsed);
+
+        // Smart Merge: se aggiungi una nuova lista nel codice (es. portogallo),
+        // ma nel localStorage non c'è, la aggiunge mantenendo intatte le tue vecchie modifiche!
+        for (const listKey in defaultData) {
+            if (!parsed[listKey]) {
+                parsed[listKey] = JSON.parse(JSON.stringify(defaultData[listKey]));
             }
-            
-            setStatus('✅ Sincronizzato con Supabase', false);
-            return normalizeData(data[0].dati);
-        } catch(e) {
-            console.error(e);
-            setStatus('❌ Errore Rete. Uso dati locali.', false);
-            return localData;
         }
+
+        setStatus('✅ Dati caricati e salvati in locale');
+        return parsed;
     }
 
-    async function saveData(dataToSave = appData) {
+    function saveData(dataToSave = appData) {
         localStorage.setItem('valigiaSupabase', JSON.stringify(dataToSave));
-        setStatus('Salvataggio...', true);
-        try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/valigie?id=eq.1`, {
-                method: 'PATCH',
-                headers: { 
-                    'Content-Type': 'application/json', 
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                    'Prefer': 'return=minimal'
-                },
-                body: JSON.stringify({ dati: dataToSave })
-            });
-            if(!res.ok) throw new Error('Upload fallito');
-            setStatus('✅ Salvato nel Cloud', false);
-        } catch(e) {
-            console.error(e);
-            setStatus('❌ Errore Cloud! Dati salvati sul PC.', false);
-        }
+        setStatus('✅ Modifiche salvate in locale');
     }
 
     function renderSelector() {
@@ -361,44 +353,44 @@
 
     function switchList(listKey) { currentList = listKey; renderApp(); }
 
-    async function toggleField(secIndex, subIndex, itemIndex, field) {
+    function toggleField(secIndex, subIndex, itemIndex, field) {
         let item = appData[currentList].sections[secIndex].subsections[subIndex].items[itemIndex];
         item[field] = !item[field];
         if (field === 'skip' && item.skip) { item.mise = false; item.valigia = false; } 
         else if ((field === 'mise' || field === 'valigia') && item[field]) { item.skip = false; }
-        renderApp(); await saveData();
+        renderApp(); saveData();
     }
 
-    async function addItem(secIndex, subIndex) {
+    function addItem(secIndex, subIndex) {
         let name = prompt("Nome nuovo oggetto:");
         if (name && name.trim() !== "") {
             appData[currentList].sections[secIndex].subsections[subIndex].items.push({ name: name.trim(), mise: false, valigia: false, skip: false, toBuy: false });
-            renderApp(); await saveData();
+            renderApp(); saveData();
         }
     }
 
-    async function addSubsection(secIndex) {
+    function addSubsection(secIndex) {
         let name = prompt("Nome della nuova tasca/scomparto:");
         if (name && name.trim() !== "") {
             appData[currentList].sections[secIndex].subsections.push({ name: name.trim(), collapsed: false, items: [] });
-            renderApp(); await saveData();
+            renderApp(); saveData();
         }
     }
 
-    async function toggleSectionHidden(secIndex) {
+    function toggleSectionHidden(secIndex) {
         appData[currentList].sections[secIndex].hidden = !appData[currentList].sections[secIndex].hidden;
-        renderApp(); await saveData();
+        renderApp(); saveData();
     }
 
-    async function toggleSubsection(secIndex, subIndex) {
+    function toggleSubsection(secIndex, subIndex) {
         appData[currentList].sections[secIndex].subsections[subIndex].collapsed = !appData[currentList].sections[secIndex].subsections[subIndex].collapsed;
-        renderApp(); await saveData();
+        renderApp(); saveData();
     }
 
-    async function deleteSection(secIndex) {
+    function deleteSection(secIndex) {
         if(confirm("Eliminare definitivamente questo bagaglio?")) {
             appData[currentList].sections.splice(secIndex, 1);
-            renderApp(); await saveData();
+            renderApp(); saveData();
         }
     }
 
@@ -420,7 +412,7 @@
         e.currentTarget.classList.add('drag-over-item');
     }
     function handleDragLeaveItem(e) { e.currentTarget.classList.remove('drag-over-item'); }
-    async function handleDropItem(e, targetSec, targetSub, targetItem) {
+    function handleDropItem(e, targetSec, targetSub, targetItem) {
         e.preventDefault();
         e.stopPropagation();
         e.currentTarget.classList.remove('drag-over-item');
@@ -432,7 +424,7 @@
         
         appData[currentList].sections[targetSec].subsections[targetSub].items.splice(insertIdx, 0, itemObj);
         dragSrc = null;
-        renderApp(); await saveData();
+        renderApp(); saveData();
     }
     function handleDragOverArea(e) {
         e.preventDefault();
@@ -442,7 +434,7 @@
     function handleDragLeaveArea(e) {
         if(e.currentTarget && e.relatedTarget && !e.currentTarget.contains(e.relatedTarget)) e.currentTarget.classList.remove('drag-over');
     }
-    async function handleDropArea(e, targetSec, targetSub) {
+    function handleDropArea(e, targetSec, targetSub) {
         e.preventDefault();
         e.currentTarget.classList.remove('drag-over');
         if (!dragSrc || (dragSrc.sec === targetSec && dragSrc.sub === targetSub)) return; 
@@ -450,7 +442,7 @@
         const itemObj = appData[currentList].sections[dragSrc.sec].subsections[dragSrc.sub].items.splice(dragSrc.item, 1)[0];
         appData[currentList].sections[targetSec].subsections[targetSub].items.push(itemObj);
         dragSrc = null;
-        renderApp(); await saveData();
+        renderApp(); saveData();
     }
 
     function openSectionModal() {
@@ -462,12 +454,12 @@
         const type = document.getElementById('new-sec-type').value;
         document.getElementById('new-sec-custom').style.display = (type === 'altro') ? 'block' : 'none';
     }
-    async function confirmAddSection() {
+    function confirmAddSection() {
         const type = document.getElementById('new-sec-type').value;
         let name = type === 'altro' ? document.getElementById('new-sec-custom').value.trim() : type;
         if (name !== "") {
             appData[currentList].sections.push({ title: name, hidden: false, subsections: [{ name: "Scomparto Principale", collapsed: false, items: [] }] });
-            closeModal('modal-section'); renderApp(); await saveData();
+            closeModal('modal-section'); renderApp(); saveData();
         }
     }
     function openEditModal(secIdx, subIdx, itemIdx) {
@@ -491,7 +483,7 @@
         });
         document.getElementById('modal-edit-item').showModal();
     }
-    async function saveItemChanges() {
+    function saveItemChanges() {
         const newName = document.getElementById('edit-item-name').value.trim();
         if(!newName) return;
         const destVal = document.getElementById('edit-item-dest').value.split('-');
@@ -502,19 +494,19 @@
             appData[currentList].sections[editSecIdx].subsections[editSubIdx].items.splice(editItemIdx, 1);
             appData[currentList].sections[newSec].subsections[newSub].items.push(itemObj);
         }
-        closeModal('modal-edit-item'); renderApp(); await saveData();
+        closeModal('modal-edit-item'); renderApp(); saveData();
     }
-    async function deleteCurrentItem() {
+    function deleteCurrentItem() {
         if(confirm("Vuoi davvero eliminare questo oggetto?")) {
             appData[currentList].sections[editSecIdx].subsections[editSubIdx].items.splice(editItemIdx, 1);
-            closeModal('modal-edit-item'); renderApp(); await saveData();
+            closeModal('modal-edit-item'); renderApp(); saveData();
         }
     }
     function closeModal(modalId) { document.getElementById(modalId).close(); }
-    async function resetCurrentList() {
+    function resetCurrentList() {
         if(confirm("Vuoi azzerare le spunte (Mise/Valigia/No/Compra) di TUTTI gli oggetti in questo scenario?")) {
             appData[currentList].sections.forEach(sec => sec.subsections.forEach(sub => sub.items.forEach(item => { item.mise = false; item.valigia = false; item.skip = false; item.toBuy = false; })));
-            renderApp(); await saveData();
+            renderApp(); saveData();
         }
     }
 
@@ -673,8 +665,8 @@
         }
     }
 
-    async function init() {
-        appData = await loadData();
+    function init() {
+        appData = loadData();
         renderSelector();
         renderApp();
         document.getElementById('footer').style.display = 'flex';
