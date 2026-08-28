@@ -48,11 +48,10 @@
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
         
         /* Modifica Titolo Smart */
-        .editable-title { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; margin-left: -8px; border-radius: 8px; transition: 0.2s; }
-        .editable-title span { font-size: 1.25em; font-weight: 800; line-height: 1.2; }
-        .editable-title .edit-icon { opacity: 0; color: var(--text-muted); display: flex; transition: 0.2s; transform: scale(0.9); }
-        .editable-title:hover { background-color: #f1f5f9; }
-        .editable-title:hover .edit-icon { opacity: 1; }
+        .editable-title { display: flex; align-items: center; gap: 8px; flex-grow: 1; }
+        .editable-title span { font-size: 1.25em; font-weight: 800; line-height: 1.2; padding: 4px 8px; margin-left: -8px; border-radius: 8px; transition: 0.2s; cursor: text; }
+        .editable-title span:hover, [contenteditable="true"]:hover { background-color: #f1f5f9; }
+        [contenteditable="true"]:focus { outline: 2px solid var(--primary); background-color: #fff; }
         
         .sec-actions { display: flex; gap: 6px; }
         .icon-btn { background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; padding: 8px; color: var(--text-muted); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -63,9 +62,9 @@
         .subsection { margin-top: 15px; padding-left: 12px; border-left: 3px solid var(--primary); }
         .subsection-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 5px 0; border-bottom: 1px dashed transparent;}
         .subsection-header:hover { border-bottom-color: var(--border); }
-        .subsection-title-area { display: flex; align-items: center; gap: 8px; cursor: pointer; flex-grow: 1; user-select: none; }
-        .subsection-title { font-size: 0.95em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
-        .subsection-toggle { color: var(--text-muted); transition: transform 0.3s; }
+        .subsection-title-area { display: flex; align-items: center; gap: 8px; flex-grow: 1; user-select: none; }
+        .subsection-title { font-size: 0.95em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; cursor: text; padding: 2px 6px; border-radius: 6px;}
+        .subsection-toggle { color: var(--text-muted); transition: transform 0.3s; cursor: pointer; padding: 4px; }
         .subsection-actions { display: flex; gap: 4px; opacity: 0.4; transition: 0.2s; }
         .subsection-header:hover .subsection-actions { opacity: 1; }
         
@@ -87,7 +86,7 @@
         .drag-handle:hover { color: var(--text-muted); }
         
         .item-name-area { display: flex; flex-direction: column; gap: 4px; flex-grow: 1;}
-        .item-name { font-weight: 600; line-height: 1.3; word-break: break-word; color: var(--text-main); font-size: 0.95em;}
+        .item-name { font-weight: 600; line-height: 1.3; word-break: break-word; color: var(--text-main); font-size: 0.95em; cursor: text; padding: 4px; border-radius: 4px;}
         
         /* Tag Da Comprare */
         .badge-buy { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7em; font-weight: 800; text-transform: uppercase; color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; padding: 3px 8px; border-radius: 20px; width: fit-content; }
@@ -97,7 +96,7 @@
         .action-btn { background: none; border: none; padding: 6px; cursor: pointer; color: var(--text-muted); border-radius: 6px; display: flex; align-items: center;}
         .action-btn:hover { background: #f1f5f9; color: var(--primary); }
         .action-btn.active-buy { color: var(--danger); opacity: 1; background: #fef2f2;}
-        .action-btn.danger:hover { background: #fee2e2; color: var(--danger); }
+        .action-btn.danger:hover { background: #fee2e2; color: var(--danger); opacity: 1;}
 
         /* Colori Stati Valigia */
         .item.status-mise { background-color: var(--mise-color); border-color: #fcd34d; }
@@ -107,11 +106,11 @@
         .item.status-skip .item-name { text-decoration: line-through; color: #94a3b8; }
         .item.status-buy { border-color: #fca5a5; border-left: 4px solid var(--danger); }
         
-        /* Controlli Checkbox */
+        /* Controlli Checkbox (modificati in bottoni emoji) */
         .controls { display: flex; gap: 8px; flex-shrink: 0;}
-        .control-label { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.15em; cursor: pointer; user-select: none; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background-color: #f8fafc; transition: 0.1s;}
-        .control-label:hover { background-color: #e2e8f0; }
-        .control-label input { cursor: pointer; width: 16px; height: 16px; margin: 0; accent-color: var(--primary);}
+        .control-label { display: flex; align-items: center; justify-content: center; font-size: 1.15em; cursor: pointer; user-select: none; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background-color: #f8fafc; transition: 0.1s;}
+        .control-label:hover { background-color: #e2e8f0; filter: brightness(0.95); transform: scale(1.05);}
+        .control-label:active { transform: scale(0.95); }
         
         /* Sommari */
         .missing-summary { font-size: 0.9em; color: #b91c1c; margin: 20px 0 10px 0; padding: 15px; background: #fef2f2; border-radius: 10px; border-left: 4px solid #ef4444; line-height: 1.5;}
@@ -132,9 +131,10 @@
         .to-buy-summary .summary-list { color: #7f1d1d; }
         .forse-summary .summary-list { color: #581c87; }
 
-        /* Bottoni */
-        .btn-add-item { background-color: transparent; color: var(--primary); width: 100%; margin-top: 5px; padding: 10px; font-size: 0.9em; border-radius: 8px; font-weight: 700; border: 2px dashed #cbd5e1; text-align: left; transition: 0.2s;}
-        .btn-add-item:hover { border-color: var(--primary); background-color: #eff6ff; }
+        /* Input In-line (Sostituisce il bottone aggiungi vecchio) */
+        .inline-add-input { background-color: transparent; color: var(--text-main); width: 100%; margin-top: 5px; padding: 12px; font-size: 0.95em; border-radius: 8px; font-weight: 600; border: 2px dashed #cbd5e1; text-align: left; transition: 0.2s; box-sizing: border-box; outline: none; }
+        .inline-add-input:focus { border-color: var(--primary); background-color: #eff6ff; }
+        .inline-add-input::placeholder { color: var(--text-muted); font-weight: 700; opacity: 0.7; }
         
         .footer-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin-top: 15px;}
         .btn-main { background-color: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; font-size: 0.95em; font-weight: 700; transition: 0.2s; flex: 1 1 calc(50% - 10px); min-width: 140px; text-align: center;}
@@ -149,9 +149,8 @@
             .item { flex-direction: column; align-items: stretch; gap: 12px; padding: 12px; }
             .item-actions { opacity: 1; justify-content: flex-end; }
             .controls { display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; gap: 6px; }
-            .control-label { flex: 1 1 calc(25% - 6px); padding: 10px 0; font-size: 1.1em;}
+            .control-label { flex: 1 1 calc(25% - 6px); height: 42px; font-size: 1.3em;}
             .subsection-actions { opacity: 1; }
-            .editable-title .edit-icon { opacity: 1; }
         }
         
         /* Modals */
@@ -168,8 +167,6 @@
         .btn-confirm:hover { background: var(--primary-hover); }
         .btn-cancel { background: #f1f5f9; color: var(--text-muted); }
         .btn-cancel:hover { background: #e2e8f0; }
-        .btn-delete { background: var(--danger); color: white; }
-        .btn-delete:hover { background: #dc2626; }
 
     </style>
 </head>
@@ -181,7 +178,6 @@
         <div id="sync-status" class="sync-status">💾 Salvataggio Locale Attivo</div>
     </div>
 
-    <!-- Qui le icone sono state ripristinate con il codice SVG diretto per evitare il bug -->
     <div class="list-selector-container">
         <svg class="svg-icon" style="color:var(--primary); display:block;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         <select id="list-selector" onchange="switchList(this.value)"></select>
@@ -214,7 +210,7 @@
     </div>
 </div>
 
-<!-- Modal Aggiungi Bagaglio -->
+<!-- Modal Aggiungi Bagaglio (Mantenuto solo questo) -->
 <dialog id="modal-section">
     <h3>Nuovo Bagaglio</h3>
     <select id="new-sec-type" onchange="checkCustomOption()">
@@ -233,20 +229,6 @@
     </div>
 </dialog>
 
-<!-- Modal Modifica Oggetto -->
-<dialog id="modal-edit-item">
-    <h3>Modifica Oggetto</h3>
-    <label>Nome oggetto:</label>
-    <input type="text" id="edit-item-name">
-    <label>Sposta in:</label>
-    <select id="edit-item-dest"></select>
-    <div class="dialog-btns">
-        <button class="btn-delete" onclick="deleteCurrentItem()">Elimina</button>
-        <button class="btn-cancel" onclick="closeModal('modal-edit-item')">Annulla</button>
-        <button class="btn-confirm" onclick="saveItemChanges()">Salva</button>
-    </div>
-</dialog>
-
 <script>
     const ICONS = {
         eye: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
@@ -255,11 +237,9 @@
         plus: `<svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`,
         chevronDown: `<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>`,
         cart: `<svg class="svg-icon svg-mini" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`,
-        edit: `<svg class="svg-icon svg-mini" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`,
         grip: `<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M9 5a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm10-14a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0zm0 7a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`
     };
 
-    // Struttura originaria ESATTA del tuo JSON, con l'aggiunta chirurgica della roba Decathlon
     const defaultData = {
         "georgia": {
             name: "🇬🇪 Georgia (Volontariato ESC)",
@@ -347,8 +327,8 @@
 
     let appData = {};
     let currentList = 'georgia'; 
-    let editSecIdx = -1, editSubIdx = -1, editItemIdx = -1;
     let dragSrc = null;
+    let focusAfterRender = null; // Mantiene il focus sull'input dopo l'aggiunta
 
     function normalizeData(data) {
         if (!data) return JSON.parse(JSON.stringify(defaultData));
@@ -516,10 +496,19 @@
         renderApp(); saveData();
     }
 
-    function addItem(secIndex, subIndex) {
-        let name = prompt("Nome nuovo oggetto:");
-        if (name && name.trim() !== "") {
-            appData[currentList].sections[secIndex].subsections[subIndex].items.push({ name: name.trim(), mise: false, valigia: false, skip: false, forse: false, toBuy: false });
+    function addItemInline(secIndex, subIndex, inputId) {
+        let inputEl = document.getElementById(inputId);
+        let name = inputEl.value.trim();
+        if (name !== "") {
+            appData[currentList].sections[secIndex].subsections[subIndex].items.push({ name: name, mise: false, valigia: false, skip: false, forse: false, toBuy: false });
+            focusAfterRender = inputId;
+            renderApp(); saveData();
+        }
+    }
+
+    function deleteItem(secIndex, subIndex, itemIndex) {
+        if(confirm("Vuoi davvero eliminare questo oggetto?")) {
+            appData[currentList].sections[secIndex].subsections[subIndex].items.splice(itemIndex, 1);
             renderApp(); saveData();
         }
     }
@@ -528,16 +517,6 @@
         let name = prompt("Nome della nuova tasca/scomparto:");
         if (name && name.trim() !== "") {
             appData[currentList].sections[secIndex].subsections.push({ name: name.trim(), collapsed: false, items: [] });
-            renderApp(); saveData();
-        }
-    }
-
-    function editSubsection(secIndex, subIndex, event) {
-        event.stopPropagation();
-        let currentName = appData[currentList].sections[secIndex].subsections[subIndex].name;
-        let name = prompt("Rinomina la tasca/scomparto:", currentName);
-        if (name && name.trim() !== "") {
-            appData[currentList].sections[secIndex].subsections[subIndex].name = name.trim();
             renderApp(); saveData();
         }
     }
@@ -555,15 +534,6 @@
         renderApp(); saveData();
     }
     
-    function renameSection(secIndex) {
-        let newName = prompt("Rinomina bagaglio:", appData[currentList].sections[secIndex].title);
-        if (newName && newName.trim() !== "") {
-            appData[currentList].sections[secIndex].title = newName.trim();
-            renderApp();
-            saveData();
-        }
-    }
-
     function toggleSubsection(secIndex, subIndex) {
         appData[currentList].sections[secIndex].subsections[subIndex].collapsed = !appData[currentList].sections[secIndex].subsections[subIndex].collapsed;
         renderApp(); saveData();
@@ -612,7 +582,7 @@
         dragSrc = null; renderApp(); saveData();
     }
 
-    // -- Modals --
+    // -- Modals (Rimasto solo nuovo bagaglio) --
     function openSectionModal() {
         document.getElementById('new-sec-type').value = "🎒 Zaino";
         document.getElementById('new-sec-custom').style.display = 'none';
@@ -628,46 +598,6 @@
         if (name !== "") {
             appData[currentList].sections.push({ title: name, hidden: false, subsections: [{ name: "Scomparto Principale", collapsed: false, items: [] }] });
             closeModal('modal-section'); renderApp(); saveData();
-        }
-    }
-    function openEditModal(secIdx, subIdx, itemIdx) {
-        editSecIdx = secIdx; editSubIdx = subIdx; editItemIdx = itemIdx;
-        const item = appData[currentList].sections[secIdx].subsections[subIdx].items[itemIdx];
-        document.getElementById('edit-item-name').value = item.name;
-        
-        const destSelect = document.getElementById('edit-item-dest');
-        destSelect.innerHTML = '';
-        appData[currentList].sections.forEach((sec, sIdx) => {
-            const optGroup = document.createElement('optgroup');
-            optGroup.label = sec.title;
-            sec.subsections.forEach((sub, sbIdx) => {
-                const opt = document.createElement('option');
-                opt.value = `${sIdx}-${sbIdx}`;
-                opt.textContent = sub.name;
-                if(sIdx === secIdx && sbIdx === subIdx) opt.selected = true;
-                optGroup.appendChild(opt);
-            });
-            destSelect.appendChild(optGroup);
-        });
-        document.getElementById('modal-edit-item').showModal();
-    }
-    function saveItemChanges() {
-        const newName = document.getElementById('edit-item-name').value.trim();
-        if(!newName) return;
-        const destVal = document.getElementById('edit-item-dest').value.split('-');
-        const newSec = parseInt(destVal[0]), newSub = parseInt(destVal[1]);
-        let itemObj = appData[currentList].sections[editSecIdx].subsections[editSubIdx].items[editItemIdx];
-        itemObj.name = newName;
-        if(newSec !== editSecIdx || newSub !== editSubIdx) {
-            appData[currentList].sections[editSecIdx].subsections[editSubIdx].items.splice(editItemIdx, 1);
-            appData[currentList].sections[newSec].subsections[newSub].items.push(itemObj);
-        }
-        closeModal('modal-edit-item'); renderApp(); saveData();
-    }
-    function deleteCurrentItem() {
-        if(confirm("Vuoi davvero eliminare questo oggetto?")) {
-            appData[currentList].sections[editSecIdx].subsections[editSubIdx].items.splice(editItemIdx, 1);
-            closeModal('modal-edit-item'); renderApp(); saveData();
         }
     }
     function closeModal(modalId) { document.getElementById(modalId).close(); }
@@ -700,9 +630,11 @@
             const header = document.createElement('div');
             header.className = 'section-header';
             header.innerHTML = `
-                <div class="editable-title" onclick="renameSection(${sIndex})" title="Rinomina Bagaglio">
-                    <span>${section.title}</span>
-                    <div class="edit-icon">${ICONS.edit}</div>
+                <div class="editable-title">
+                    <span contenteditable="true" spellcheck="false"
+                          onblur="appData[currentList].sections[${sIndex}].title = this.innerText.trim() || 'Bagaglio'; saveData();"
+                          onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}"
+                          title="Clicca per rinominare">${section.title}</span>
                 </div>
                 <div class="sec-actions">
                     <button class="icon-btn" title="Aggiungi Tasca/Scomparto" onclick="addSubsection(${sIndex})">${ICONS.plus}</button>
@@ -725,16 +657,22 @@
                 
                 const subTitleArea = document.createElement('div');
                 subTitleArea.className = 'subsection-title-area';
-                subTitleArea.onclick = () => toggleSubsection(sIndex, subIndex);
+                // Toggle al click (ma evito di scatenarlo se clicco sul testo per editare)
+                subTitleArea.onclick = (e) => {
+                    if (e.target.hasAttribute('contenteditable')) return;
+                    toggleSubsection(sIndex, subIndex);
+                };
+                
                 subTitleArea.innerHTML = `
                     <div class="subsection-toggle">${ICONS.chevronDown}</div>
-                    <div class="subsection-title">📍 ${sub.name}</div>
+                    <div class="subsection-title" contenteditable="true" spellcheck="false"
+                         onblur="appData[currentList].sections[${sIndex}].subsections[${subIndex}].name = this.innerText.trim() || 'Scomparto'; saveData();"
+                         onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}" title="Clicca per rinominare">📍 ${sub.name}</div>
                 `;
 
                 const subActions = document.createElement('div');
                 subActions.className = 'subsection-actions';
                 subActions.innerHTML = `
-                    <button class="action-btn" title="Rinomina Tasca" onclick="editSubsection(${sIndex}, ${subIndex}, event)">${ICONS.edit}</button>
                     <button class="action-btn danger" title="Elimina Tasca" onclick="deleteSubsection(${sIndex}, ${subIndex}, event)">${ICONS.trash}</button>
                 `;
 
@@ -780,7 +718,9 @@
                     
                     const nameArea = document.createElement('div');
                     nameArea.className = 'item-name-area';
-                    let nameHtml = `<div class="item-name">${item.name}</div>`;
+                    let nameHtml = `<div class="item-name" contenteditable="true" spellcheck="false"
+                                          onblur="appData[currentList].sections[${sIndex}].subsections[${subIndex}].items[${iIndex}].name = this.innerText.trim() || 'Oggetto'; saveData();"
+                                          onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}" title="Clicca per rinominare">${item.name}</div>`;
                     if (item.toBuy) nameHtml += `<div class="badge-buy">🛒 Da Comprare</div>`;
                     nameArea.innerHTML = nameHtml;
 
@@ -788,28 +728,21 @@
                     actionsDiv.className = 'item-actions';
                     actionsDiv.innerHTML = `
                         <button class="action-btn ${item.toBuy ? 'active-buy' : ''}" title="Da Comprare" onclick="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'toBuy')">${ICONS.cart}</button>
-                        <button class="action-btn" title="Modifica Oggetto" onclick="openEditModal(${sIndex}, ${subIndex}, ${iIndex})">${ICONS.edit}</button>
+                        <button class="action-btn danger" title="Elimina Oggetto" onclick="deleteItem(${sIndex}, ${subIndex}, ${iIndex})">${ICONS.trash}</button>
                     `;
                     
                     headerDiv.appendChild(dragDiv);
                     headerDiv.appendChild(nameArea);
                     headerDiv.appendChild(actionsDiv);
 
+                    // I controlli modificati, senza checkbox, ma cliccabili direttamente
                     const controlsDiv = document.createElement('div');
                     controlsDiv.className = 'controls';
                     controlsDiv.innerHTML = `
-                        <label class="control-label" title="Mise en place">
-                            <input type="checkbox" ${item.mise ? 'checked' : ''} onchange="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'mise')">📦
-                        </label>
-                        <label class="control-label" title="In Valigia">
-                            <input type="checkbox" ${item.valigia ? 'checked' : ''} onchange="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'valigia')">🧳
-                        </label>
-                        <label class="control-label" title="Forse / Da decidere">
-                            <input type="checkbox" ${item.forse ? 'checked' : ''} onchange="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'forse')">❓
-                        </label>
-                        <label class="control-label" title="Non Serve">
-                            <input type="checkbox" ${item.skip ? 'checked' : ''} onchange="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'skip')">❌
-                        </label>
+                        <div class="control-label" title="Mise en place" onclick="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'mise')" style="${item.mise ? 'background: #fcd34d;' : ''}">📦</div>
+                        <div class="control-label" title="In Valigia" onclick="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'valigia')" style="${item.valigia ? 'background: #86efac;' : ''}">🧳</div>
+                        <div class="control-label" title="Forse / Da decidere" onclick="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'forse')" style="${item.forse ? 'background: var(--forse-border);' : ''}">❓</div>
+                        <div class="control-label" title="Non Serve" onclick="toggleField(${sIndex}, ${subIndex}, ${iIndex}, 'skip')" style="${item.skip ? 'background: #e2e8f0;' : ''}">❌</div>
                     `;
                     
                     itemDiv.appendChild(headerDiv);
@@ -817,11 +750,20 @@
                     subBody.appendChild(itemDiv);
                 });
 
-                const addBtn = document.createElement('button');
-                addBtn.className = 'btn-add-item';
-                addBtn.textContent = '+ Aggiungi oggetto...';
-                addBtn.onclick = () => addItem(sIndex, subIndex);
-                subBody.appendChild(addBtn);
+                // Aggiunta inline rapida
+                const addInputId = `add-input-${sIndex}-${subIndex}`;
+                const addInput = document.createElement('input');
+                addInput.type = 'text';
+                addInput.id = addInputId;
+                addInput.className = 'inline-add-input';
+                addInput.placeholder = '+ Scrivi e premi Invio...';
+                addInput.onkeydown = (e) => {
+                    if(e.key === 'Enter') {
+                        e.preventDefault();
+                        addItemInline(sIndex, subIndex, addInputId);
+                    }
+                };
+                subBody.appendChild(addInput);
 
                 subDiv.appendChild(subBody);
                 body.appendChild(subDiv);
@@ -869,6 +811,13 @@
                 </ul>
             `;
             root.appendChild(buyContainer);
+        }
+
+        // Rimette il focus sull'input di aggiunta per un flusso continuo se l'utente sta aggiungendo a raffica
+        if (focusAfterRender) {
+            const el = document.getElementById(focusAfterRender);
+            if (el) { el.focus(); el.value = ''; }
+            focusAfterRender = null;
         }
     }
 
