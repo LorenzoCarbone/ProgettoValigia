@@ -441,11 +441,24 @@
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
-                appData = normalizeData(data);
+                const normalizedData = normalizeData(data);
+                
+                // Aggiunge le liste importate senza sovrascrivere quelle vecchie
+                let lastImportedKey = currentList;
+                for (const key in normalizedData) {
+                    let newKey = key;
+                    if (appData[newKey]) {
+                        newKey = key + "_" + Date.now();
+                        normalizedData[key].name = normalizedData[key].name + " (Importata)";
+                    }
+                    appData[newKey] = normalizedData[key];
+                    lastImportedKey = newKey; // Salva l'ultima chiave per aprirla subito
+                }
+                
                 saveData();
                 renderSelector();
-                renderApp();
-                alert("✅ Backup importato con successo!");
+                switchList(lastImportedKey); // Ti porta direttamente alla nuova lista
+                alert("✅ Liste aggiunte con successo al tuo database!");
             } catch (err) {
                 alert("❌ Errore durante l'importazione del file JSON.");
             }
