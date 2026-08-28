@@ -429,10 +429,18 @@
 
     // -- Export / Import --
     function exportData() {
-        const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+        // Isola ESCLUSIVAMENTE la lista che stai visualizzando in questo momento
+        const dataToExport = {};
+        dataToExport[currentList] = appData[currentList];
+
+        const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "packsync_backup.json";
+        
+        // Genera un nome file pulito basato sul nome della tua lista
+        let safeName = appData[currentList].name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        link.download = `packsync_${safeName}.json`;
+        
         link.click();
     }
 
